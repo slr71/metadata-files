@@ -8,6 +8,7 @@
 
 (alias-uri :datacite "http://datacite.org/schema/kernel-4")
 (alias-uri :xml "http://www.w3.org/XML/1998/namespace")
+(alias-uri :xsi "http://www.w3.org/2001/XMLSchema-instance")
 
 ;; Required field: identifier
 
@@ -146,10 +147,16 @@
 
 ;; The datacite document itself.
 
+(def ^:private schema-locations
+  (->> ["https://schema.datacite.org/meta/kernel-4.1 https://schema.datacite.org/meta/kernel-4.1/metadata.xsd"]
+       (string/join " ")))
+
 (deftype Datacite [elements]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/resource {:xmlns/datacite "http://datacite.org/schema/kernel-4"}
+    (element ::datacite/resource {:xmlns/datacite      "http://datacite.org/schema/kernel-4"
+                                  :xmlns/xsi           "http://www.w3.org/2001/XMLSchema-instance"
+                                  ::xsi/schemaLocation schema-locations}
       (mapv mdf/to-xml elements))))
 
 (defn- required-element-factories [attributes]
