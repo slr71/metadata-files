@@ -21,13 +21,11 @@
 ;; Comparing generated XML to parsed XML requires us to serialize and parse the generated XML.
 (defn test-xml
   "Compares XML in a file to generated XML. The XML in the file is assumed to be the expected value and the
-   generated XML is assumed to be the actual value to compare to the expected value. The optional schema-location
-   parameter can be used to validate the generated XML against a schema as well."
-  ([filename xml]
-   (test-xml filename xml nil))
-  ([filename xml & schema-locations]
-   (let [xml-str (xml/emit-str xml)]
-     (when-let [valid-xml? (build-validator schema-locations)]
-       (is (valid-xml? (string/replace xml-str #"<\?[^?]*\?>" ""))))
-     (is (= (xml/parse (io/reader (io/resource filename)))
-            (xml/parse-str xml-str))))))
+   generated XML is assumed to be the actual value to compare to the expected value. The optional schema-locations
+   parameter can be used to validate the generated XML against one or more XML schemas as well."
+  [filename xml & [schema-locations]]
+  (let [xml-str (xml/emit-str xml)]
+    (when-let [valid-xml? (build-validator schema-locations)]
+      (is (valid-xml? (string/replace xml-str #"<\?[^?]*\?>" ""))))
+    (is (= (xml/parse (io/reader (io/resource filename)))
+           (xml/parse-str xml-str)))))

@@ -1,5 +1,6 @@
 (ns org.cyverse.metadata-files.util
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [clojure.pprint :refer [pprint]]))
 
 (defn missing-required-attributes [attribute-names]
   (throw (ex-info (str "Missing required attributes: " (string/join ", " attribute-names))
@@ -17,10 +18,14 @@
 (defn attr-value [attributes attribute-name]
   (first (attr-values attributes attribute-name)))
 
-(defn associated-attr-values [attributes attribute-names]
-  (let [vs (map (partial attr-values attributes) attribute-names)]
-    (when-not (apply = (map count vs))
+(defn associated-attr-values [attributes required-attribute-names optional-attribute-names]
+  (let [get-values (partial attr-values attributes)
+        extend-ovs (fn [ovs] (concat ovs (repeat nil)))
+        rvs        (map get-values required-attribute-names)
+        ovs        (map (comp extend-ovs get-values) optional-attribute-names)]
+    (when-not (apply = (map count rvs))
       (throw
-       (ex-info (str "These attributes must have the same number of values: " (string/join ", " attribute-names))
-                {:attributes attribute-names})))
-    (map (partial apply vector) vs)))
+       (ex-info (str "These attributes must have the same number of values: "
+                     (string/join ", " required-attribute-names))
+                {:attributes required-attribute-names})))
+    (apply map vector (concat rvs ovs))))

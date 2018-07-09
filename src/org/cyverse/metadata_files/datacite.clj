@@ -32,12 +32,13 @@
 
 ;; Required field: creators
 
-(deftype Creator [name affiliation]
+(deftype Creator [name affiliation name-id]
   mdf/XmlSerializable
   (to-xml [_]
     (element ::datacite/creator {}
-      [(element ::datacite/creatorName {} name)
-       (element ::datacite/affiliation {} affiliation)])))
+      (remove nil? [(element ::datacite/creatorName {} name)
+                    (when-not (string/blank? name-id) (element ::datacite/nameIdentifier {} name-id))
+                    (element ::datacite/affiliation {} affiliation)]))))
 
 (deftype Creators [creators]
   mdf/XmlSerializable
@@ -56,8 +57,9 @@
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
-      (let [values (util/associated-attr-values attributes ["datacite.creator" "creatorAffiliation"])]
-        (Creators. (mapv (fn [[name affiliation]] (Creator. name affiliation)) values))))))
+      (let [values (util/associated-attr-values
+                    attributes ["datacite.creator" "creatorAffiliation"] ["creatorNameIdentifier"])]
+        (Creators. (mapv (fn [[name affiliation name-id]] (Creator. name affiliation name-id)) values))))))
 
 ;; Required field: title
 

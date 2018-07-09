@@ -21,6 +21,9 @@
 (def ^:private schema-url
   (URL. "https://schema.datacite.org/meta/kernel-4.1/metadata.xsd"))
 
+(defn- test-datacite [file attrs]
+  (test-xml file (build-datacite (build-attributes attrs)) [schema-url]))
+
 (defn- test-missing-fields [& field-names]
   (let [spec (str "(:?" (string/join "|" (map #(Pattern/quote %) field-names)) "(?:,\\s*)?{" (count field-names) "})")]
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
@@ -29,7 +32,7 @@
 
 (deftest test-minimal
   (testing "Minimal DataCite file."
-    (test-xml "datacite/minimal.xml" (build-datacite (build-attributes min-attrs)) schema-url)))
+    (test-datacite "datacite/minimal.xml" min-attrs)))
 
 (deftest test-missing-identifier
   (testing "DataCite file generation with missing identifier."
@@ -66,3 +69,7 @@
 (deftest test-all-missing-fields
   (testing "DataCite file generateion with all required fields missing."
     (apply test-missing-fields (keys min-attrs))))
+
+(deftest test-creator-with-name-id
+  (testing "DataCite file with creator name identifier."
+    (test-datacite "datacite/creator-name-id.xml" (assoc min-attrs "creatorNameIdentifier" "foo"))))
