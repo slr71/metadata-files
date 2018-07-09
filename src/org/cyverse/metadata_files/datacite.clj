@@ -167,8 +167,12 @@
    (PublicationYearGenerator. attributes)
    (ResourceTypeGenerator. attributes)])
 
+(defn- optional-element-factories [attributes]
+  [])
+
 (defn- element-factories [attributes]
-  (required-element-factories attributes))
+  (concat (required-element-factories attributes)
+          (optional-element-factories attributes)))
 
 (deftype DataciteGenerator [attributes]
   mdf/ElementFactory
