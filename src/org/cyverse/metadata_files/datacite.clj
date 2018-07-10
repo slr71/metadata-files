@@ -253,6 +253,31 @@
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
         (RelatedIds. (mapv (fn [[id type relation-type]] (RelatedId. id type relation-type)) vs))))))
 
+;; Optional field: rightsList
+
+(deftype Rights [rights]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/rights {::xml/lang "en"} rights)))
+
+(deftype RightsList [rights-list]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/rightsList {}
+      (mapv mdf/to-xml rights-list))))
+
+(deftype RightsListGenterator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [self]
+    (when-let [vs (seq (util/attr-values attributes "Rights"))]
+      (RightsList. (mapv (fn [rights] (Rights. rights)) vs)))))
+
 ;; The datacite document itself.
 
 (def ^:private schema-locations
@@ -279,7 +304,8 @@
   [(SubjectsGenerator. attributes)
    (ContributorsGenerator. attributes)
    (AlternateIdsGenerator. attributes)
-   (RelatedIdsGenerator. attributes)])
+   (RelatedIdsGenerator. attributes)
+   (RightsListGenterator. attributes)])
 
 (defn- element-factories [attributes]
   (concat (required-element-factories attributes)

@@ -82,7 +82,7 @@
          (test-datacite "datacite/multiple-creators.xml"))))
 
 (deftest test-subject
-  (testing "DataCite file generation with subjects"
+  (testing "DataCite file generation with subjects."
     (->> [["Subject" "foo,bar,baz"]
           ["Subject" "quux"]
           ["Subject" "blrfl"]]
@@ -90,7 +90,7 @@
          (test-datacite "datacite/subjects.xml"))))
 
 (deftest test-contributors
-  (testing "DataCite file generation with contributors"
+  (testing "DataCite file generation with contributors."
     (->> [["contributorName" "Somebody Else"]
           ["contributorType" "DataCollector"]
           ["contributorName" "Nobody Else"]
@@ -99,7 +99,7 @@
          (test-datacite "datacite/contributors.xml"))))
 
 (deftest test-alternate-identifiers
-  (testing "DataCite file generation with alternate identifiers"
+  (testing "DataCite file generation with alternate identifiers."
     (->> [["alternateIdentifier" "the-alternate-id"]
           ["alternateIdentifierType" "ARK"]
           ["alternateIdentifier" "the-other-alternate-id"]
@@ -108,7 +108,7 @@
          (test-datacite "datacite/alternate-ids.xml"))))
 
 (deftest test-related-identifiers
-  (testing "DataCite file generation with related identifiers"
+  (testing "DataCite file generation with related identifiers."
     (->> [["relatedIdentifier" "the-related-id"]
           ["relatedIdentifierType" "ARK"]
           ["relationType" "Continues"]
@@ -117,3 +117,10 @@
           ["relationType" "IsDocumentedBy"]]
          (concat min-attrs)
          (test-datacite "datacite/related-ids.xml"))))
+
+(deftest test-rights-list
+  (testing "DataCite file generation with rights."
+    (->> [["Rights" "CC0"]
+          ["Rights" "ODC PDDL"]]
+         (concat min-attrs)
+         (test-datacite "datacite/rights.xml"))))
