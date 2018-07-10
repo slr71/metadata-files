@@ -222,8 +222,36 @@
     #{})
 
   (generate [self]
-    (when-let [vs (seq (util/associated-attr-values attributes ["alternateIdentifier" "alternateIdentifierType"] []))]
-      (AlternateIds. (mapv (fn [[id type]] (AlternateId. id type)) vs)))))
+    (let [required-attrs ["alternateIdentifier" "alternateIdentifierType"]]
+      (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
+        (AlternateIds. (mapv (fn [[id type]] (AlternateId. id type)) vs))))))
+
+;; Optional field: related identifiers
+
+(deftype RelatedId [id type relation-type]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/relatedIdentifier {::datacite/relatedIdentifierType type ::datacite/relationType relation-type}
+      id)))
+
+(deftype RelatedIds [related-ids]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/relatedIdentifiers {}
+      (mapv mdf/to-xml related-ids))))
+
+(deftype RelatedIdsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [self]
+    (let [required-attrs ["relatedIdentifier" "relatedIdentifierType" "relationType"]]
+      (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
+        (RelatedIds. (mapv (fn [[id type relation-type]] (RelatedId. id type relation-type)) vs))))))
 
 ;; The datacite document itself.
 
@@ -250,7 +278,8 @@
 (defn- optional-element-factories [attributes]
   [(SubjectsGenerator. attributes)
    (ContributorsGenerator. attributes)
-   (AlternateIdsGenerator. attributes)])
+   (AlternateIdsGenerator. attributes)
+   (RelatedIdsGenerator. attributes)])
 
 (defn- element-factories [attributes]
   (concat (required-element-factories attributes)

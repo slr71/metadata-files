@@ -106,3 +106,14 @@
           ["alternateIdentifierType" "FOOID"]]
          (concat min-attrs)
          (test-datacite "datacite/alternate-ids.xml"))))
+
+(deftest test-related-identifiers
+  (testing "DataCite file generation with related identifiers"
+    (->> [["relatedIdentifier" "the-related-id"]
+          ["relatedIdentifierType" "ARK"]
+          ["relationType" "Continues"]
+          ["relatedIdentifier" "the-other-related-id"]
+          ["relatedIdentifierType" "Other"]
+          ["relationType" "IsDocumentedBy"]]
+         (concat min-attrs)
+         (test-datacite "datacite/related-ids.xml"))))
