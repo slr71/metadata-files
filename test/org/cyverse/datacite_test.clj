@@ -124,3 +124,12 @@
           ["Rights" "ODC PDDL"]]
          (concat min-attrs)
          (test-datacite "datacite/rights.xml"))))
+
+(deftest test-descriptions
+  (testing "DataCite file generation with descriptions."
+    (->> [["Description" "The description"]
+          ["descriptionType" "Abstract"]
+          ["Description" "The other description"]
+          ["descriptionType" "Concrete"]]
+         (concat min-attrs)
+         (test-datacite "datacite/descriptions.xml"))))

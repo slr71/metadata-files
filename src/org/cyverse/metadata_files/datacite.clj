@@ -168,7 +168,7 @@
   (missing-attributes [_]
     #{})
 
-  (generate [self]
+  (generate [_]
     (when-let [values (seq (util/attr-values attributes "Subject"))]
       (Subjects. (->> (mapcat (fn [s] (string/split s #"\s*,\s*")) values)
                       (mapv (fn [subject] (Subject. subject))))))))
@@ -196,7 +196,7 @@
   (missing-attributes [_]
     #{})
 
-  (generate [self]
+  (generate [_]
     (when-let [values (seq (util/associated-attr-values attributes ["contributorName" "contributorType"] []))]
       (Contributors. (mapv (fn [[name type]] (Contributor. name type)) values)))))
 
@@ -221,7 +221,7 @@
   (missing-attributes [_]
     #{})
 
-  (generate [self]
+  (generate [_]
     (let [required-attrs ["AlternateIdentifier" "alternateIdentifierType"]]
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
         (AlternateIds. (mapv (fn [[id type]] (AlternateId. id type)) vs))))))
@@ -248,7 +248,7 @@
   (missing-attributes [_]
     #{})
 
-  (generate [self]
+  (generate [_]
     (let [required-attrs ["RelatedIdentifier" "relatedIdentifierType" "relationType"]]
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
         (RelatedIds. (mapv (fn [[id type relation-type]] (RelatedId. id type relation-type)) vs))))))
@@ -274,9 +274,35 @@
   (missing-attributes [_]
     #{})
 
-  (generate [self]
+  (generate [_]
     (when-let [vs (seq (util/attr-values attributes "Rights"))]
       (RightsList. (mapv (fn [rights] (Rights. rights)) vs)))))
+
+;; Optional field: descriptions
+
+(deftype Description [description type]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/description {::datacite/descriptionType type ::xml/lang "en"} description)))
+
+(deftype Descriptions [descriptions]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/descriptions {}
+      (mapv mdf/to-xml descriptions))))
+
+(deftype DescriptionsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [_]
+    (let [required-attrs ["Description" "descriptionType"]]
+      (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
+        (Descriptions. (mapv (fn [[description type]] (Description. description type)) vs))))))
 
 ;; The datacite document itself.
 
@@ -305,7 +331,8 @@
    (ContributorsGenerator. attributes)
    (AlternateIdsGenerator. attributes)
    (RelatedIdsGenerator. attributes)
-   (RightsListGenterator. attributes)])
+   (RightsListGenterator. attributes)
+   (DescriptionsGenerator. attributes)])
 
 (defn- element-factories [attributes]
   (concat (required-element-factories attributes)
