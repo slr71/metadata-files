@@ -100,19 +100,19 @@
 
 (deftest test-alternate-identifiers
   (testing "DataCite file generation with alternate identifiers."
-    (->> [["alternateIdentifier" "the-alternate-id"]
+    (->> [["AlternateIdentifier" "the-alternate-id"]
           ["alternateIdentifierType" "ARK"]
-          ["alternateIdentifier" "the-other-alternate-id"]
+          ["AlternateIdentifier" "the-other-alternate-id"]
           ["alternateIdentifierType" "FOOID"]]
          (concat min-attrs)
          (test-datacite "datacite/alternate-ids.xml"))))
 
 (deftest test-related-identifiers
   (testing "DataCite file generation with related identifiers."
-    (->> [["relatedIdentifier" "the-related-id"]
+    (->> [["RelatedIdentifier" "the-related-id"]
           ["relatedIdentifierType" "ARK"]
           ["relationType" "Continues"]
-          ["relatedIdentifier" "the-other-related-id"]
+          ["RelatedIdentifier" "the-other-related-id"]
           ["relatedIdentifierType" "Other"]
           ["relationType" "IsDocumentedBy"]]
          (concat min-attrs)

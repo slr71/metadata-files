@@ -222,7 +222,7 @@
     #{})
 
   (generate [self]
-    (let [required-attrs ["alternateIdentifier" "alternateIdentifierType"]]
+    (let [required-attrs ["AlternateIdentifier" "alternateIdentifierType"]]
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
         (AlternateIds. (mapv (fn [[id type]] (AlternateId. id type)) vs))))))
 
@@ -249,7 +249,7 @@
     #{})
 
   (generate [self]
-    (let [required-attrs ["relatedIdentifier" "relatedIdentifierType" "relationType"]]
+    (let [required-attrs ["RelatedIdentifier" "relatedIdentifierType" "relationType"]]
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
         (RelatedIds. (mapv (fn [[id type relation-type]] (RelatedId. id type relation-type)) vs))))))
 
