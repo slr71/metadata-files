@@ -88,3 +88,12 @@
           ["Subject" "blrfl"]]
          (concat min-attrs)
          (test-datacite "datacite/subjects.xml"))))
+
+(deftest test-contributors
+  (testing "DataCite file generation with contributors"
+    (->> [["contributorName" "Somebody Else"]
+          ["contributorType" "DataCollector"]
+          ["contributorName" "Nobody Else"]
+          ["contributorType" "Editor"]]
+         (concat min-attrs)
+         (test-datacite "datacite/contributors.xml"))))

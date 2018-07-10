@@ -173,6 +173,33 @@
       (Subjects. (->> (mapcat (fn [s] (string/split s #"\s*,\s*")) values)
                       (mapv (fn [subject] (Subject. subject))))))))
 
+;; Optional field: contributors
+
+(deftype Contributor [name type]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/contributor {}
+      [(element ::datacite/contributorName {} name)
+       (element ::datacite/contributorType {} type)])))
+
+(deftype Contributors [contributors]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/contributors {}
+      (mapv mdf/to-xml contributors))))
+
+(deftype ContributorsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [self]
+    (when-let [values (seq (util/associated-attr-values attributes ["contributorName" "contributorType"] []))]
+      (Contributors. (mapv (fn [[name type]] (Contributor. name type)) values)))))
+
 ;; The datacite document itself.
 
 (def ^:private schema-locations
@@ -196,7 +223,8 @@
    (ResourceTypeGenerator. attributes)])
 
 (defn- optional-element-factories [attributes]
-  [(SubjectsGenerator. attributes)])
+  [(SubjectsGenerator. attributes)
+   (ContributorsGenerator. attributes)])
 
 (defn- element-factories [attributes]
   (concat (required-element-factories attributes)
