@@ -200,6 +200,31 @@
     (when-let [values (seq (util/associated-attr-values attributes ["contributorName" "contributorType"] []))]
       (Contributors. (mapv (fn [[name type]] (Contributor. name type)) values)))))
 
+;; Optional field: alternate identifiers
+
+(deftype AlternateId [id type]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/alternateIdentifier {::datacite/alternateIdentifierType type} id)))
+
+(deftype AlternateIds [alternate-ids]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/alternateIdentifiers {}
+      (mapv mdf/to-xml alternate-ids))))
+
+(deftype AlternateIdsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [self]
+    (when-let [vs (seq (util/associated-attr-values attributes ["alternateIdentifier" "alternateIdentifierType"] []))]
+      (AlternateIds. (mapv (fn [[id type]] (AlternateId. id type)) vs)))))
+
 ;; The datacite document itself.
 
 (def ^:private schema-locations
@@ -224,7 +249,8 @@
 
 (defn- optional-element-factories [attributes]
   [(SubjectsGenerator. attributes)
-   (ContributorsGenerator. attributes)])
+   (ContributorsGenerator. attributes)
+   (AlternateIdsGenerator. attributes)])
 
 (defn- element-factories [attributes]
   (concat (required-element-factories attributes)

@@ -97,3 +97,12 @@
           ["contributorType" "Editor"]]
          (concat min-attrs)
          (test-datacite "datacite/contributors.xml"))))
+
+(deftest test-alternate-identifiers
+  (testing "DataCite file generation with alternate identifiers"
+    (->> [["alternateIdentifier" "the-alternate-id"]
+          ["alternateIdentifierType" "ARK"]
+          ["alternateIdentifier" "the-other-alternate-id"]
+          ["alternateIdentifierType" "FOOID"]]
+         (concat min-attrs)
+         (test-datacite "datacite/alternate-ids.xml"))))
