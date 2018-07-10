@@ -73,3 +73,18 @@
 (deftest test-creator-with-name-id
   (testing "DataCite file with creator name identifier."
     (test-datacite "datacite/creator-name-id.xml" (assoc min-attrs "creatorNameIdentifier" "foo"))))
+
+(deftest test-multiple-creators-without-name-id
+  (testing "DataCite file with multiple creators without the name identifier."
+    (->> [["datacite.creator" "Somebody Else"]
+          ["creatorAffiliation" "University of Somewhere"]]
+         (concat min-attrs)
+         (test-datacite "datacite/multiple-creators.xml"))))
+
+(deftest test-subject
+  (testing "DataCite file generation with subjects"
+    (->> [["Subject" "foo,bar,baz"]
+          ["Subject" "quux"]
+          ["Subject" "blrfl"]]
+         (concat min-attrs)
+         (test-datacite "datacite/subjects.xml"))))

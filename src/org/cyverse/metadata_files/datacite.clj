@@ -147,6 +147,32 @@
       (util/missing-required-attributes missing)
       (ResourceType. (util/attr-value attributes "datacite.resourcetype")))))
 
+;; Optional field: subjects
+
+(deftype Subject [subject]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/subject {::xml/lang "en"} subject)))
+
+(deftype Subjects [subjects]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/subjects {}
+      (mapv mdf/to-xml subjects))))
+
+(deftype SubjectsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [self]
+    (when-let [values (seq (util/attr-values attributes "Subject"))]
+      (Subjects. (->> (mapcat (fn [s] (string/split s #"\s*,\s*")) values)
+                      (mapv (fn [subject] (Subject. subject))))))))
+
 ;; The datacite document itself.
 
 (def ^:private schema-locations
@@ -170,7 +196,7 @@
    (ResourceTypeGenerator. attributes)])
 
 (defn- optional-element-factories [attributes]
-  [])
+  [(SubjectsGenerator. attributes)])
 
 (defn- element-factories [attributes]
   (concat (required-element-factories attributes)
