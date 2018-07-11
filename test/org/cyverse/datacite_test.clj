@@ -133,3 +133,11 @@
           ["descriptionType" "Concrete"]]
          (concat min-attrs)
          (test-datacite "datacite/descriptions.xml"))))
+
+(deftest test-geo-locations
+  (testing "DataCite file generation with geographic locations."
+    (->> [["geoLocationBox" "70.2944 -155.7153 72.2944 -157.7153"]
+          ["geoLocationPoint" "71.2944 -156.7153"]
+          ["geoLocationPlace" "The Place"]]
+         (concat min-attrs)
+         (test-datacite "datacite/geolocations.xml"))))

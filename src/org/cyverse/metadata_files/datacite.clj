@@ -2,6 +2,7 @@
   (:use [clojure.data.xml :only [alias-uri element]])
   (:require [clojure.string :as string]
             [org.cyverse.metadata-files :as mdf]
+            [org.cyverse.metadata-files.datacite.geolocation :as geolocation]
             [org.cyverse.metadata-files.util :as util]))
 
 ;; Define aliases for XML namespaces.
@@ -304,6 +305,61 @@
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
         (Descriptions. (mapv (fn [[description type]] (Description. description type)) vs))))))
 
+;; Optional field: geoLocations
+
+(deftype GeoLocationPlace [place]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/geoLocationPlace {} place)))
+
+(deftype GeoLocationPoint [latitude longitude]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/geoLocationPoint {}
+      [(element ::datacite/pointLongitude {} longitude)
+       (element ::datacite/pointLatitude {} latitude)])))
+
+(deftype GeoLocationBox [west east south north]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/geoLocationBox {}
+      [(element ::datacite/westBoundLongitude {} west)
+       (element ::datacite/eastBoundLongigude {} east)
+       (element ::datacite/southBoundLatitude {} south)
+       (element ::datacite/northBoundLatitude {} north)])))
+
+(deftype GeoLocation [place point box]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/geoLocation {}
+      (remove nil? [(when place (mdf/to-xml place))
+                    (when point (mdf/to-xml point))
+                    (when box (mdf/to-xml box))]))))
+
+(deftype GeoLocations [geolocations]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/geoLocations {}
+      (mapv mdf/to-xml geolocations))))
+
+(deftype GeoLocationsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [_]
+    (let [create-point   (fn [[latitude longitude]] (GeoLocationPoint. latitude longitude))
+          create-box     (fn [[west east north south]] (GeoLocationBox. west east north south))
+          optional-attrs ["geoLocationPlace" "geoLocationPoint" "geoLocationBox"]]
+      (when-let [vs (seq (util/associated-attr-values attributes [] optional-attrs))]
+        (GeoLocations. (vec (for [[place point box] (map geolocation/parse-attrs vs)]
+                              (GeoLocation. (when place (GeoLocationPlace. place))
+                                            (when point (create-point point))
+                                            (when box (create-box box))))))))))
+
 ;; The datacite document itself.
 
 (def ^:private schema-locations
@@ -332,7 +388,8 @@
    (AlternateIdsGenerator. attributes)
    (RelatedIdsGenerator. attributes)
    (RightsListGenterator. attributes)
-   (DescriptionsGenerator. attributes)])
+   (DescriptionsGenerator. attributes)
+   (GeoLocationsGenerator. attributes)])
 
 (defn- element-factories [attributes]
   (concat (required-element-factories attributes)

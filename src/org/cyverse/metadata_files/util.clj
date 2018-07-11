@@ -20,10 +20,10 @@
 
 (defn associated-attr-values [attributes required-attribute-names optional-attribute-names]
   (let [get-values (partial attr-values attributes)
-        extend-ovs (fn [ovs] (concat ovs (repeat nil)))
+        extend-ovs (fn [ovs] (if (seq required-attribute-names) (concat ovs (repeat nil)) ovs))
         rvs        (map get-values required-attribute-names)
         ovs        (map (comp extend-ovs get-values) optional-attribute-names)]
-    (when-not (apply = (map count rvs))
+    (when-not (or (empty? rvs) (apply = (map count rvs)))
       (throw
        (ex-info (str "These attributes must have the same number of values: "
                      (string/join ", " required-attribute-names))
