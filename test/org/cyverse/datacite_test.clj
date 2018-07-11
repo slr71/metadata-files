@@ -24,11 +24,17 @@
 (defn- test-datacite [file attrs]
   (test-xml file (build-datacite (build-attributes attrs)) [schema-url]))
 
+(defn- debug-datacite [file attrs]
+  (test-xml file (build-datacite (build-attributes attrs)) [schema-url] true))
+
 (defn- test-missing-fields [& field-names]
   (let [spec (str "(:?" (string/join "|" (map #(Pattern/quote %) field-names)) "(?:,\\s*)?{" (count field-names) "})")]
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
                           (re-pattern (str "Missing required attributes: " spec))
                           (build-datacite (build-attributes (apply dissoc min-attrs field-names)))))))
+
+(defn- test-exception [msg-regex attrs]
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo msg-regex (build-datacite (build-attributes attrs)))))
 
 (deftest test-minimal
   (testing "Minimal DataCite file."
@@ -80,6 +86,19 @@
           ["creatorAffiliation" "University of Somewhere"]]
          (concat min-attrs)
          (test-datacite "datacite/multiple-creators.xml"))))
+
+(deftest test-group-with-different-numbers-of-required-attr-values
+  (testing "DataCite file for metadata group with different numbers of required attribute values"
+    (->> [["datacite.creator" "Somebody Else"]]
+         (concat min-attrs)
+         (test-exception #"^These attributes must have the same number of values"))))
+
+(deftest test-group-with-more-optional-attr-values-than-required-attr-values
+  (testing "DataCite file for metadata group with more optional attribute values than required attribute values."
+    (->> [["creatorNameIdentifier" "foo"]
+          ["creatorNameIdentifier" "bar"]]
+         (concat min-attrs)
+         (test-exception #"^None of the attributes, (?:[^,]+, )+may have more values than any of the attributes"))))
 
 (deftest test-subject
   (testing "DataCite file generation with subjects."
@@ -141,3 +160,13 @@
           ["geoLocationPlace" "The Place"]]
          (concat min-attrs)
          (test-datacite "datacite/geolocations.xml"))))
+
+(deftest test-group-with-different-numbers-of-optional-attribute-values
+  (testing "DataCite file for metadata group with different numbers of optional attribute values."
+    (->> [["geoLocationBox" "70.2944 -155.7153 72.2944 -157.7153"]
+          ["geoLocationPoint" "71.2944 -156.7153"]
+          ["geoLocationPlace" "The Place"]
+          ["geoLocationPlace" "The County"]
+          ["geoLocationPlace" "The State"]]
+         (concat min-attrs)
+         (test-datacite "datacite/multiple-geolocations.xml"))))
