@@ -25,8 +25,8 @@
     (validate-longitude long-1)
     (validate-latitude lat-2)
     (validate-longitude long-2)
-    (concat (sort-by #(Double/parseDouble %) [lat-1 lat-2])
-            (sort-by #(Double/parseDouble %) [long-1 long-2]))))
+    (concat (sort-by #(Double/parseDouble %) [long-1 long-2])
+            (sort-by #(Double/parseDouble %) [lat-1 lat-2]))))
 
 (defn parse-attrs [[place point box :as attrs]]
   (when attrs

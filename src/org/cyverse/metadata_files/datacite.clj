@@ -324,7 +324,7 @@
   (to-xml [_]
     (element ::datacite/geoLocationBox {}
       [(element ::datacite/westBoundLongitude {} west)
-       (element ::datacite/eastBoundLongigude {} east)
+       (element ::datacite/eastBoundLongitude {} east)
        (element ::datacite/southBoundLatitude {} south)
        (element ::datacite/northBoundLatitude {} north)])))
 

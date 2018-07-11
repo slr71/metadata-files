@@ -24,6 +24,8 @@
    generated XML is assumed to be the actual value to compare to the expected value. The optional schema-locations
    parameter can be used to validate the generated XML against one or more XML schemas as well."
   [filename xml & [schema-locations]]
+  (println (xml/indent-str xml))
+  (println (xml/indent-str (xml/parse (io/reader (io/resource filename)))))
   (let [xml-str (xml/emit-str xml)]
     (when-let [valid-xml? (build-validator schema-locations)]
       (is (valid-xml? (string/replace xml-str #"<\?[^?]*\?>" ""))))
