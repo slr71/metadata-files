@@ -53,4 +53,4 @@
         ovs        (map get-values optional-attribute-names)
         ovs        (extend-associated-optional-values rvs ovs)]
     (validate-associated-required-values required-attribute-names optional-attribute-names rvs ovs)
-    (apply map vector (concat rvs ovs))))
+    (drop-while (partial every? string/blank?) (apply map vector (concat rvs ovs)))))

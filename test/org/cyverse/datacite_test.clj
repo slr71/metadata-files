@@ -126,6 +126,15 @@
          (concat min-attrs)
          (test-datacite "datacite/alternate-ids.xml"))))
 
+(deftest test-empty-optional-repeating-field
+  (testing "DataCite file generation with alternate identifiers."
+    (->> [["AlternateIdentifier" ""]
+          ["alternateIdentifierType" ""]
+          ["AlternateIdentifier" ""]
+          ["alternateIdentifierType" ""]]
+         (concat min-attrs)
+         (test-datacite "datacite/minimal.xml"))))
+
 (deftest test-related-identifiers
   (testing "DataCite file generation with related identifiers."
     (->> [["RelatedIdentifier" "the-related-id"]
