@@ -27,11 +27,17 @@
 (defn- debug-datacite [file attrs]
   (test-xml file (build-datacite (build-attributes attrs)) [schema-url] true))
 
-(defn- test-missing-fields [& field-names]
+(defn- test-missing-fields* [field-names attrs]
   (let [spec (str "(:?" (string/join "|" (map #(Pattern/quote %) field-names)) "(?:,\\s*)?{" (count field-names) "})")]
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
                           (re-pattern (str "Missing required attributes: " spec))
-                          (build-datacite (build-attributes (apply dissoc min-attrs field-names)))))))
+                          (build-datacite (build-attributes attrs))))))
+
+(defn- test-missing-fields [& field-names]
+  (test-missing-fields* field-names (apply dissoc min-attrs field-names)))
+
+(defn- test-blank-fields [& field-names]
+  (test-missing-fields* field-names (apply assoc min-attrs (mapcat #(vector % "") field-names))))
 
 (defn- test-exception [msg-regex attrs]
   (is (thrown-with-msg? clojure.lang.ExceptionInfo msg-regex (build-datacite (build-attributes attrs)))))
@@ -42,39 +48,48 @@
 
 (deftest test-missing-identifier
   (testing "DataCite file generation with missing identifier."
-    (test-missing-fields "Identifier")))
+    (test-missing-fields "Identifier")
+    (test-blank-fields "Identifier")))
 
 (deftest test-missing-identifier-type
   (testing "DataCite file generation with missing identifier type."
-    (test-missing-fields "identifierType")))
+    (test-missing-fields "identifierType")
+    (test-blank-fields "identifierType")))
 
 (deftest test-missing-creator
   (testing "DataCite file generation with missing creator."
-    (test-missing-fields "datacite.creator")))
+    (test-missing-fields "datacite.creator")
+    (test-blank-fields "datacite.creator")))
 
 (deftest test-missing-creator-affiliation
   (testing "DataCite file generation with missing creator affiliation."
-    (test-missing-fields "creatorAffiliation")))
+    (test-missing-fields "creatorAffiliation")
+    (test-blank-fields "creatorAffiliation")))
 
 (deftest test-missing-title
   (testing "DataCite file generation with missing title."
-    (test-missing-fields "datacite.title")))
+    (test-missing-fields "datacite.title")
+    (test-blank-fields "datacite.title")))
 
 (deftest test-missing-publisher
   (testing "DataCite file generation with missing publisher."
-    (test-missing-fields "datacite.publisher")))
+    (test-missing-fields "datacite.publisher")
+    (test-blank-fields "datacite.publisher")))
 
 (deftest test-missing-publication-year
   (testing "DataCite file generation with missing publication year."
-    (test-missing-fields "datacite.publicationyear")))
+    (test-missing-fields "datacite.publicationyear")
+    (test-blank-fields "datacite.publicationyear")))
 
 (deftest test-missing-resource-type
   (testing "DataCite file generation with missing resource type."
-    (test-missing-fields "datacite.resourcetype")))
+    (test-missing-fields "datacite.resourcetype")
+    (test-blank-fields "datacite.resourcetype")))
 
 (deftest test-all-missing-fields
   (testing "DataCite file generateion with all required fields missing."
-    (apply test-missing-fields (keys min-attrs))))
+    (apply test-missing-fields (keys min-attrs))
+    (apply test-blank-fields (keys min-attrs))))
 
 (deftest test-creator-with-name-id
   (testing "DataCite file with creator name identifier."
