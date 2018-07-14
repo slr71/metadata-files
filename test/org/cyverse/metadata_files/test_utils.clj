@@ -17,20 +17,24 @@
   [attrs]
   (mapv (fn [[attr value]] {:attr attr :value value}) attrs))
 
-(def build-validator
+(defn- get-schema-validtor
+  "Gets an XML schema validator for a schema URL."
+  [schema-location]
+  (-> (SchemaFactory/newInstance XMLConstants/W3C_XML_SCHEMA_NS_URI)
+      (.newSchema (URL. schema-location))
+      (.newValidator)))
+
+(def build-validation-fn
   (memoize
    (fn [schema-location]
-     (let [schema-factory (SchemaFactory/newInstance XMLConstants/W3C_XML_SCHEMA_NS_URI)
-           schema-url     (URL. schema-location)
-           schema         (.newSchema schema-factory schema-url)
-           validator      (.newValidator schema)]
+     (let [validator (get-schema-validtor schema-location)]
        (fn [xml-str]
          (let [source (StreamSource. (io/input-stream (.getBytes xml-str)))]
            (try
              (.validate validator source)
              true
              (catch SAXException e
-               (println "DEBUG STUFF: " (.getMessage e))
+               (println "XML schema validation failed: " (.getMessage e))
                false))))))))
 
 ;; Comparing generated XML to parsed XML requires us to serialize and parse the generated XML.
@@ -43,6 +47,6 @@
     (println "Actual:" (xml/indent-str xml))
     (println "Expected:" (xml/indent-str (xml/parse (io/reader (io/resource filename))))))
   (let [xml-str (xml/emit-str xml)]
-    (is ((build-validator schema-location) xml-str))
+    (is ((build-validation-fn schema-location) xml-str))
     (is (= (xml/parse (io/reader (io/resource filename)))
            (xml/parse-str xml-str)))))
