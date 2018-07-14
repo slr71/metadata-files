@@ -19,9 +19,9 @@
   (first (attr-values attributes attribute-name)))
 
 (defn- validate-associated-required-values
-  "Verifies the number of required attribute values in an a set of associated attributes. All required attributes in a
-  set must have the same number of values. Furthermore, it is an error for any optional attributes to have more values
-  than the required attributes have."
+  "Verifies the number of required attribute values in a set of associated attributes. All required attributes in a set
+  must have the same number of values. Furthermore, it is an error for any optional attributes to have more values than
+  the required attributes have."
   [required-attribute-names optional-attribute-names required-values optional-values]
   (when-not (or (empty? required-values) (apply = (map count required-values)))
     (throw (ex-info (str "These attributes must have the same number of values: "
