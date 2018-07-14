@@ -5,11 +5,10 @@
             [org.cyverse.metadata-files :refer :all]
             [org.cyverse.metadata-files.datacite :refer [build-datacite]]
             [org.cyverse.metadata-files.test-utils :refer [build-attributes test-xml]])
-  (:import [java.net URL]
-           [java.util.regex Pattern]))
+  (:import [java.util.regex Pattern]))
 
 (def ^:private min-attrs
-  {"Identifier"               "the-identifier"
+  {"Identifier"               "10.1000/182"
    "identifierType"           "DOI"
    "datacite.creator"         "Nobody Inparticular"
    "creatorAffiliation"       "The University of Nowhere"
@@ -19,13 +18,13 @@
    "datacite.resourcetype"    "Data Set"})
 
 (def ^:private schema-url
-  (URL. "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd"))
+  "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd")
 
 (defn- test-datacite [file attrs]
-  (test-xml file (build-datacite (build-attributes attrs)) [schema-url]))
+  (test-xml file (build-datacite (build-attributes attrs)) schema-url))
 
 (defn- debug-datacite [file attrs]
-  (test-xml file (build-datacite (build-attributes attrs)) [schema-url] true))
+  (test-xml file (build-datacite (build-attributes attrs)) schema-url true))
 
 (defn- test-missing-fields* [field-names attrs]
   (let [spec (str "(:?" (string/join "|" (map #(Pattern/quote %) field-names)) "(?:,\\s*)?{" (count field-names) "})")]
@@ -93,7 +92,7 @@
 
 (deftest test-creator-with-name-id
   (testing "DataCite file with creator name identifier."
-    (test-datacite "datacite/creator-name-id.xml" (assoc min-attrs "creatorNameIdentifier" "foo"))))
+    (test-datacite "datacite/creator-name-id.xml" (assoc min-attrs "creatorNameIdentifier" "0000-0000-0000-0000"))))
 
 (deftest test-multiple-creators-without-name-id
   (testing "DataCite file with multiple creators without the name identifier."
@@ -110,8 +109,8 @@
 
 (deftest test-group-with-more-optional-attr-values-than-required-attr-values
   (testing "DataCite file for metadata group with more optional attribute values than required attribute values."
-    (->> [["creatorNameIdentifier" "foo"]
-          ["creatorNameIdentifier" "bar"]]
+    (->> [["creatorNameIdentifier" "0000-0000-0000-0000"]
+          ["creatorNameIdentifier" "0000-0000-0000-0001"]]
          (concat min-attrs)
          (test-exception #"^None of the attributes, (?:[^,]+, )+may have more values than any of the attributes"))))
 
@@ -156,7 +155,7 @@
           ["relatedIdentifierType" "ARK"]
           ["relationType" "Continues"]
           ["RelatedIdentifier" "the-other-related-id"]
-          ["relatedIdentifierType" "Other"]
+          ["relatedIdentifierType" "arXiv"]
           ["relationType" "IsDocumentedBy"]]
          (concat min-attrs)
          (test-datacite "datacite/related-ids.xml"))))
@@ -173,7 +172,7 @@
     (->> [["Description" "The description"]
           ["descriptionType" "Abstract"]
           ["Description" "The other description"]
-          ["descriptionType" "Concrete"]]
+          ["descriptionType" "Other"]]
          (concat min-attrs)
          (test-datacite "datacite/descriptions.xml"))))
 

@@ -9,5 +9,4 @@
             [test2junit "1.2.2"]]
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.xml "0.2.0-alpha5"]]
-  :profiles {:dev {:resource-paths ["test-resources"]
-                   :dependencies [[clj-xml-validation "1.0.2"]]}})
+  :profiles {:dev {:resource-paths ["test-resources"]}})

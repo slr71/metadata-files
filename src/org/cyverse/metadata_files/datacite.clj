@@ -16,7 +16,7 @@
 (deftype Identifier [type id]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/identifier {::datacite/identifierType type} id)))
+    (element ::datacite/identifier {:identifierType type} id)))
 
 (deftype IdentifierGenerator [attributes]
   mdf/ElementFactory
@@ -38,7 +38,7 @@
   (to-xml [_]
     (element ::datacite/creator {}
       [(element ::datacite/creatorName {} name)
-       (when-not (string/blank? name-id) (element ::datacite/nameIdentifier {} name-id))
+       (when-not (string/blank? name-id) (element ::datacite/nameIdentifier {:nameIdentifierScheme "ORCID"} name-id))
        (element ::datacite/affiliation {} affiliation)])))
 
 (deftype Creators [creators]
@@ -133,7 +133,7 @@
 (deftype ResourceType [resource-type]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/resourceType {} resource-type)))
+    (element ::datacite/resourceType {:resourceTypeGeneral "Dataset"} resource-type)))
 
 (deftype ResourceTypeGenerator [attributes]
   mdf/ElementFactory
@@ -179,9 +179,8 @@
 (deftype Contributor [name type]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/contributor {}
-      [(element ::datacite/contributorName {} name)
-       (element ::datacite/contributorType {} type)])))
+    (element ::datacite/contributor {:contributorType type}
+      [(element ::datacite/contributorName {} name)])))
 
 (deftype Contributors [contributors]
   mdf/XmlSerializable
@@ -206,7 +205,7 @@
 (deftype AlternateId [id type]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/alternateIdentifier {::datacite/alternateIdentifierType type} id)))
+    (element ::datacite/alternateIdentifier {:alternateIdentifierType type} id)))
 
 (deftype AlternateIds [alternate-ids]
   mdf/XmlSerializable
@@ -232,7 +231,7 @@
 (deftype RelatedId [id type relation-type]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/relatedIdentifier {::datacite/relatedIdentifierType type ::datacite/relationType relation-type}
+    (element ::datacite/relatedIdentifier {:relatedIdentifierType type :relationType relation-type}
       id)))
 
 (deftype RelatedIds [related-ids]
@@ -259,7 +258,7 @@
 (deftype Rights [rights]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/rights {::xml/lang "en"} rights)))
+    (element ::datacite/rights {} rights)))
 
 (deftype RightsList [rights-list]
   mdf/XmlSerializable
@@ -284,7 +283,7 @@
 (deftype Description [description type]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/description {::datacite/descriptionType type ::xml/lang "en"} description)))
+    (element ::datacite/description {:descriptionType type ::xml/lang "en"} description)))
 
 (deftype Descriptions [descriptions]
   mdf/XmlSerializable
