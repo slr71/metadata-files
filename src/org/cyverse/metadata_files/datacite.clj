@@ -15,7 +15,7 @@
 (deftype Identifier [type id]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/identifier {:identifierType type} id)))
+    (element ::datacite/identifier {:identifierType type} (string/replace id #"^doi:" ""))))
 
 (deftype IdentifierGenerator [attributes]
   mdf/ElementFactory

@@ -13,7 +13,7 @@
   (set (remove (attribute-set attributes) required-attributes)))
 
 (defn attr-values [attributes attribute-name]
-  (map :value (filter (comp (partial = attribute-name) :attr) attributes)))
+  (map string/trim (map :value (filter (comp (partial = attribute-name) :attr) attributes))))
 
 (defn attr-value [attributes attribute-name]
   (first (attr-values attributes attribute-name)))

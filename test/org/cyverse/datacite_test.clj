@@ -8,7 +8,7 @@
   (:import [java.util.regex Pattern]))
 
 (def ^:private min-attrs
-  {"Identifier"               "10.1000/182"
+  {"Identifier"               "   doi:10.1000/182"
    "identifierType"           "DOI"
    "datacite.creator"         "Nobody Inparticular"
    "creatorAffiliation"       "The University of Nowhere"
