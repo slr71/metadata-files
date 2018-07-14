@@ -29,7 +29,7 @@
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
-      (Identifier. (util/attr-value attributes "identifierType") (util/attr-value attributes "identifier")))))
+      (Identifier. (util/attr-value attributes "identifierType") (util/attr-value attributes "Identifier")))))
 
 ;; Required field: creators
 
