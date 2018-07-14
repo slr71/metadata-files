@@ -2,12 +2,14 @@
   (:use [clojure.data.xml :only [alias-uri element]])
   (:require [clojure.string :as string]
             [org.cyverse.metadata-files :as mdf]
+            [org.cyverse.metadata-files.datacite.geolocation :as geolocation]
             [org.cyverse.metadata-files.util :as util]))
 
 ;; Define aliases for XML namespaces.
 
-(alias-uri :datacite "http://datacite.org/schema/kernel-4")
+(alias-uri :datacite "http://datacite.org/schema/kernel-3")
 (alias-uri :xml "http://www.w3.org/XML/1998/namespace")
+(alias-uri :xsi "http://www.w3.org/2001/XMLSchema-instance")
 
 ;; Required field: identifier
 
@@ -31,11 +33,12 @@
 
 ;; Required field: creators
 
-(deftype Creator [name affiliation]
+(deftype Creator [name affiliation name-id]
   mdf/XmlSerializable
   (to-xml [_]
     (element ::datacite/creator {}
       [(element ::datacite/creatorName {} name)
+       (when-not (string/blank? name-id) (element ::datacite/nameIdentifier {} name-id))
        (element ::datacite/affiliation {} affiliation)])))
 
 (deftype Creators [creators]
@@ -55,8 +58,9 @@
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
-      (let [values (util/associated-attr-values attributes ["datacite.creator" "creatorAffiliation"])]
-        (Creators. (mapv (fn [[name affiliation]] (Creator. name affiliation)) values))))))
+      (let [values (util/associated-attr-values
+                    attributes ["datacite.creator" "creatorAffiliation"] ["creatorNameIdentifier"])]
+        (Creators. (mapv (fn [[name affiliation name-id]] (Creator. name affiliation name-id)) values))))))
 
 ;; Required field: title
 
@@ -144,12 +148,230 @@
       (util/missing-required-attributes missing)
       (ResourceType. (util/attr-value attributes "datacite.resourcetype")))))
 
+;; Optional field: subjects
+
+(deftype Subject [subject]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/subject {::xml/lang "en"} subject)))
+
+(deftype Subjects [subjects]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/subjects {}
+      (mapv mdf/to-xml subjects))))
+
+(deftype SubjectsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [_]
+    (when-let [values (seq (util/attr-values attributes "Subject"))]
+      (Subjects. (->> (mapcat (fn [s] (string/split s #"\s*,\s*")) values)
+                      (mapv (fn [subject] (Subject. subject))))))))
+
+;; Optional field: contributors
+
+(deftype Contributor [name type]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/contributor {}
+      [(element ::datacite/contributorName {} name)
+       (element ::datacite/contributorType {} type)])))
+
+(deftype Contributors [contributors]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/contributors {}
+      (mapv mdf/to-xml contributors))))
+
+(deftype ContributorsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [_]
+    (when-let [values (seq (util/associated-attr-values attributes ["contributorName" "contributorType"] []))]
+      (Contributors. (mapv (fn [[name type]] (Contributor. name type)) values)))))
+
+;; Optional field: alternate identifiers
+
+(deftype AlternateId [id type]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/alternateIdentifier {::datacite/alternateIdentifierType type} id)))
+
+(deftype AlternateIds [alternate-ids]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/alternateIdentifiers {}
+      (mapv mdf/to-xml alternate-ids))))
+
+(deftype AlternateIdsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [_]
+    (let [required-attrs ["AlternateIdentifier" "alternateIdentifierType"]]
+      (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
+        (AlternateIds. (mapv (fn [[id type]] (AlternateId. id type)) vs))))))
+
+;; Optional field: related identifiers
+
+(deftype RelatedId [id type relation-type]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/relatedIdentifier {::datacite/relatedIdentifierType type ::datacite/relationType relation-type}
+      id)))
+
+(deftype RelatedIds [related-ids]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/relatedIdentifiers {}
+      (mapv mdf/to-xml related-ids))))
+
+(deftype RelatedIdsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [_]
+    (let [required-attrs ["RelatedIdentifier" "relatedIdentifierType" "relationType"]]
+      (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
+        (RelatedIds. (mapv (fn [[id type relation-type]] (RelatedId. id type relation-type)) vs))))))
+
+;; Optional field: rightsList
+
+(deftype Rights [rights]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/rights {::xml/lang "en"} rights)))
+
+(deftype RightsList [rights-list]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/rightsList {}
+      (mapv mdf/to-xml rights-list))))
+
+(deftype RightsListGenterator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [_]
+    (when-let [vs (seq (util/attr-values attributes "Rights"))]
+      (RightsList. (mapv (fn [rights] (Rights. rights)) vs)))))
+
+;; Optional field: descriptions
+
+(deftype Description [description type]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/description {::datacite/descriptionType type ::xml/lang "en"} description)))
+
+(deftype Descriptions [descriptions]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/descriptions {}
+      (mapv mdf/to-xml descriptions))))
+
+(deftype DescriptionsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [_]
+    (let [required-attrs ["Description" "descriptionType"]]
+      (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
+        (Descriptions. (mapv (fn [[description type]] (Description. description type)) vs))))))
+
+;; Optional field: geoLocations
+
+(deftype GeoLocationPlace [place]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/geoLocationPlace {} place)))
+
+(deftype GeoLocationPoint [latitude longitude]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/geoLocationPoint {}
+      [(element ::datacite/pointLongitude {} longitude)
+       (element ::datacite/pointLatitude {} latitude)])))
+
+(deftype GeoLocationBox [west east south north]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/geoLocationBox {}
+      [(element ::datacite/westBoundLongitude {} west)
+       (element ::datacite/eastBoundLongitude {} east)
+       (element ::datacite/southBoundLatitude {} south)
+       (element ::datacite/northBoundLatitude {} north)])))
+
+(deftype GeoLocation [place point box]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/geoLocation {}
+      [(when place (mdf/to-xml place))
+       (when point (mdf/to-xml point))
+       (when box (mdf/to-xml box))])))
+
+(deftype GeoLocations [geolocations]
+  mdf/XmlSerializable
+  (to-xml [_]
+    (element ::datacite/geoLocations {}
+      (mapv mdf/to-xml geolocations))))
+
+(deftype GeoLocationsGenerator [attributes]
+  mdf/ElementFactory
+  (required-attributes [_]
+    #{})
+
+  (missing-attributes [_]
+    #{})
+
+  (generate [_]
+    (let [create-point   (fn [[latitude longitude]] (GeoLocationPoint. latitude longitude))
+          create-box     (fn [[west east north south]] (GeoLocationBox. west east north south))
+          optional-attrs ["geoLocationPlace" "geoLocationPoint" "geoLocationBox"]]
+      (when-let [vs (seq (util/associated-attr-values attributes [] optional-attrs))]
+        (GeoLocations. (vec (for [[place point box] (map geolocation/parse-attrs vs)]
+                              (GeoLocation. (when place (GeoLocationPlace. place))
+                                            (when point (create-point point))
+                                            (when box (create-box box))))))))))
+
 ;; The datacite document itself.
+
+(def ^:private schema-locations
+  (->> ["https://schema.datacite.org/meta/kernel-3.1 https://schema.datacite.org/meta/kernel-3.1/metadata.xsd"]
+       (string/join " ")))
 
 (deftype Datacite [elements]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/resource {:xmlns/datacite "http://datacite.org/schema/kernel-4"}
+    (element ::datacite/resource {:xmlns/datacite      "http://datacite.org/schema/kernel-3"
+                                  :xmlns/xsi           "http://www.w3.org/2001/XMLSchema-instance"
+                                  ::xsi/schemaLocation schema-locations}
       (mapv mdf/to-xml elements))))
 
 (defn- required-element-factories [attributes]
@@ -160,8 +382,18 @@
    (PublicationYearGenerator. attributes)
    (ResourceTypeGenerator. attributes)])
 
+(defn- optional-element-factories [attributes]
+  [(SubjectsGenerator. attributes)
+   (ContributorsGenerator. attributes)
+   (AlternateIdsGenerator. attributes)
+   (RelatedIdsGenerator. attributes)
+   (RightsListGenterator. attributes)
+   (DescriptionsGenerator. attributes)
+   (GeoLocationsGenerator. attributes)])
+
 (defn- element-factories [attributes]
-  (required-element-factories attributes))
+  (concat (required-element-factories attributes)
+          (optional-element-factories attributes)))
 
 (deftype DataciteGenerator [attributes]
   mdf/ElementFactory
