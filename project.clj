@@ -1,4 +1,4 @@
-(defproject org.cyverse/metadata-files "1.0.2"
+(defproject org.cyverse/metadata-files "1.0.3-SNAPSHOT"
   :description "Library for generating metadata files."
   :url "https://github.com/cyverse-de/metadata-files"
   :license {:name "BSD"
