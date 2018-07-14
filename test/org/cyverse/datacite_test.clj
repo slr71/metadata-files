@@ -142,7 +142,7 @@
          (test-datacite "datacite/alternate-ids.xml"))))
 
 (deftest test-empty-optional-repeating-field
-  (testing "DataCite file generation with alternate identifiers."
+  (testing "DataCite file generation with empty optional repeating fields."
     (->> [["AlternateIdentifier" ""]
           ["alternateIdentifierType" ""]
           ["AlternateIdentifier" ""]
