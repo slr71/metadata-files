@@ -37,9 +37,9 @@
   mdf/XmlSerializable
   (to-xml [_]
     (element ::datacite/creator {}
-      (remove nil? [(element ::datacite/creatorName {} name)
-                    (when-not (string/blank? name-id) (element ::datacite/nameIdentifier {} name-id))
-                    (element ::datacite/affiliation {} affiliation)]))))
+      [(element ::datacite/creatorName {} name)
+       (when-not (string/blank? name-id) (element ::datacite/nameIdentifier {} name-id))
+       (element ::datacite/affiliation {} affiliation)])))
 
 (deftype Creators [creators]
   mdf/XmlSerializable
@@ -332,9 +332,9 @@
   mdf/XmlSerializable
   (to-xml [_]
     (element ::datacite/geoLocation {}
-      (remove nil? [(when place (mdf/to-xml place))
-                    (when point (mdf/to-xml point))
-                    (when box (mdf/to-xml box))]))))
+      [(when place (mdf/to-xml place))
+       (when point (mdf/to-xml point))
+       (when box (mdf/to-xml box))])))
 
 (deftype GeoLocations [geolocations]
   mdf/XmlSerializable
