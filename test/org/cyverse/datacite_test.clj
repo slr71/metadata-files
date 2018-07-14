@@ -19,7 +19,7 @@
    "datacite.resourcetype"    "Data Set"})
 
 (def ^:private schema-url
-  (URL. "https://schema.datacite.org/meta/kernel-4.1/metadata.xsd"))
+  (URL. "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd"))
 
 (defn- test-datacite [file attrs]
   (test-xml file (build-datacite (build-attributes attrs)) [schema-url]))
