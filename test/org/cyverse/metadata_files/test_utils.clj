@@ -12,11 +12,12 @@
   [attrs]
   (mapv (fn [[attr value]] {:attr attr :value value}) attrs))
 
-(defn- build-validator
-  "Builds a schema validator for one or more schema locations"
-  [schema-locations]
-  (when (seq schema-locations)
-    (apply create-validation-fn schema-locations)))
+(def ^{:doc "Builds a schema validator for one or more schema locations"}
+  build-validator
+  (memoize
+   (fn [schema-locations]
+     (when (seq schema-locations)
+       (apply create-validation-fn schema-locations)))))
 
 ;; Comparing generated XML to parsed XML requires us to serialize and parse the generated XML.
 (defn test-xml
