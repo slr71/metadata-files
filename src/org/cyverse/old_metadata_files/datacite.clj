@@ -1,8 +1,8 @@
-(ns org.cyverse.metadata-files.datacite
+(ns org.cyverse.old-metadata-files.datacite
   (:use [clojure.data.xml :only [alias-uri element]])
   (:require [clojure.string :as string]
-            [org.cyverse.metadata-files :as mdf]
-            [org.cyverse.metadata-files.util :as util]))
+            [org.cyverse.old-metadata-files :as mdf]
+            [org.cyverse.old-metadata-files.util :as util]))
 
 ;; Define aliases for XML namespaces.
 

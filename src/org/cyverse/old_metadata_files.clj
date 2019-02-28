@@ -1,4 +1,4 @@
-(ns org.cyverse.metadata-files)
+(ns org.cyverse.old-metadata-files)
 
 (defprotocol ElementFactory
   (required-attributes [_] "Returns the set of required attributes.")

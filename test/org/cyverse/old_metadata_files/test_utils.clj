@@ -1,4 +1,4 @@
-(ns org.cyverse.metadata-files.test-utils
+(ns org.cyverse.old-metadata-files.test-utils
   (:require [clojure.data.xml :as xml]
             [clojure.java.io :as io]
             [clojure.string :as string]

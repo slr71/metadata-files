@@ -1,4 +1,4 @@
-(ns org.cyverse.metadata-files.util
+(ns org.cyverse.old-metadata-files.util
   (:require [clojure.string :as string]
             [clojure.pprint :refer [pprint]]))
 

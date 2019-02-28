@@ -1,10 +1,10 @@
-(ns org.cyverse.datacite-test
+(ns org.cyverse.old-datacite-test
   (:require [clojure.data.xml :refer :all]
             [clojure.string :as string]
             [clojure.test :refer :all]
-            [org.cyverse.metadata-files :refer :all]
-            [org.cyverse.metadata-files.datacite :refer [build-datacite]]
-            [org.cyverse.metadata-files.test-utils :refer [build-attributes test-xml]])
+            [org.cyverse.old-metadata-files :refer :all]
+            [org.cyverse.old-metadata-files.datacite :refer [build-datacite]]
+            [org.cyverse.old-metadata-files.test-utils :refer [build-attributes test-xml]])
   (:import [java.util.regex Pattern]))
 
 (def ^:private min-attrs
@@ -43,7 +43,7 @@
 
 (deftest test-minimal
   (testing "Minimal DataCite file."
-    (test-datacite "datacite/minimal.xml" min-attrs)))
+    (test-datacite "old-datacite/minimal.xml" min-attrs)))
 
 (deftest test-missing-identifier
   (testing "DataCite file generation with missing identifier."
@@ -92,14 +92,14 @@
 
 (deftest test-creator-with-name-id
   (testing "DataCite file with creator name identifier."
-    (test-datacite "datacite/creator-name-id.xml" (assoc min-attrs "creatorNameIdentifier" "0000-0000-0000-0000"))))
+    (test-datacite "old-datacite/creator-name-id.xml" (assoc min-attrs "creatorNameIdentifier" "0000-0000-0000-0000"))))
 
 (deftest test-multiple-creators-without-name-id
   (testing "DataCite file with multiple creators without the name identifier."
     (->> [["datacite.creator" "Somebody Else"]
           ["creatorAffiliation" "University of Somewhere"]]
          (concat min-attrs)
-         (test-datacite "datacite/multiple-creators.xml"))))
+         (test-datacite "old-datacite/multiple-creators.xml"))))
 
 (deftest test-group-with-different-numbers-of-required-attr-values
   (testing "DataCite file for metadata group with different numbers of required attribute values"
@@ -120,7 +120,7 @@
           ["Subject" "quux"]
           ["Subject" "blrfl"]]
          (concat min-attrs)
-         (test-datacite "datacite/subjects.xml"))))
+         (test-datacite "old-datacite/subjects.xml"))))
 
 (deftest test-contributors
   (testing "DataCite file generation with contributors."
@@ -129,7 +129,7 @@
           ["contributorName" "Nobody Else"]
           ["contributorType" "Editor"]]
          (concat min-attrs)
-         (test-datacite "datacite/contributors.xml"))))
+         (test-datacite "old-datacite/contributors.xml"))))
 
 (deftest test-alternate-identifiers
   (testing "DataCite file generation with alternate identifiers."
@@ -138,7 +138,7 @@
           ["AlternateIdentifier" "the-other-alternate-id"]
           ["alternateIdentifierType" "FOOID"]]
          (concat min-attrs)
-         (test-datacite "datacite/alternate-ids.xml"))))
+         (test-datacite "old-datacite/alternate-ids.xml"))))
 
 (deftest test-empty-optional-repeating-field
   (testing "DataCite file generation with empty optional repeating fields."
@@ -147,7 +147,7 @@
           ["AlternateIdentifier" ""]
           ["alternateIdentifierType" ""]]
          (concat min-attrs)
-         (test-datacite "datacite/minimal.xml"))))
+         (test-datacite "old-datacite/minimal.xml"))))
 
 (deftest test-related-identifiers
   (testing "DataCite file generation with related identifiers."
@@ -158,14 +158,14 @@
           ["relatedIdentifierType" "arXiv"]
           ["relationType" "IsDocumentedBy"]]
          (concat min-attrs)
-         (test-datacite "datacite/related-ids.xml"))))
+         (test-datacite "old-datacite/related-ids.xml"))))
 
 (deftest test-rights-list
   (testing "DataCite file generation with rights."
     (->> [["Rights" "CC0"]
           ["Rights" "ODC PDDL"]]
          (concat min-attrs)
-         (test-datacite "datacite/rights.xml"))))
+         (test-datacite "old-datacite/rights.xml"))))
 
 (deftest test-descriptions
   (testing "DataCite file generation with descriptions."
@@ -174,7 +174,7 @@
           ["Description" "The other description"]
           ["descriptionType" "Other"]]
          (concat min-attrs)
-         (test-datacite "datacite/descriptions.xml"))))
+         (test-datacite "old-datacite/descriptions.xml"))))
 
 (deftest test-geo-locations
   (testing "DataCite file generation with geographic locations."
@@ -182,7 +182,7 @@
           ["geoLocationPoint" "71.2944 -156.7153"]
           ["geoLocationPlace" "The Place"]]
          (concat min-attrs)
-         (test-datacite "datacite/geolocations.xml"))))
+         (test-datacite "old-datacite/geolocations.xml"))))
 
 (deftest test-group-with-different-numbers-of-optional-attribute-values
   (testing "DataCite file for metadata group with different numbers of optional attribute values."
@@ -192,4 +192,4 @@
           ["geoLocationPlace" "The County"]
           ["geoLocationPlace" "The State"]]
          (concat min-attrs)
-         (test-datacite "datacite/multiple-geolocations.xml"))))
+         (test-datacite "old-datacite/multiple-geolocations.xml"))))
