@@ -25,7 +25,6 @@
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
-  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -55,7 +54,6 @@
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
-  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -84,7 +82,6 @@
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
-  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -105,7 +102,6 @@
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
-  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -126,7 +122,6 @@
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
-  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -147,7 +142,6 @@
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
-  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -174,7 +168,6 @@
   (missing-attributes [_]
     #{})
 
-  mdf/ElementFactory
   (generate [_]
     (when-let [values (seq (util/attr-values attributes "Subject"))]
       (Subjects. (->> (mapcat (fn [s] (string/split s #"\s*,\s*")) values)
@@ -202,7 +195,6 @@
   (missing-attributes [_]
     #{})
 
-  mdf/ElementFactory
   (generate [_]
     (when-let [values (seq (util/associated-attr-values attributes ["contributorName" "contributorType"] []))]
       (Contributors. (mapv (fn [[name type]] (Contributor. name type)) values)))))
@@ -228,7 +220,6 @@
   (missing-attributes [_]
     #{})
 
-  mdf/ElementFactory
   (generate [_]
     (let [required-attrs ["AlternateIdentifier" "alternateIdentifierType"]]
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
@@ -256,7 +247,6 @@
   (missing-attributes [_]
     #{})
 
-  mdf/ElementFactory
   (generate [_]
     (let [required-attrs ["RelatedIdentifier" "relatedIdentifierType" "relationType"]]
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
@@ -283,7 +273,6 @@
   (missing-attributes [_]
     #{})
 
-  mdf/ElementFactory
   (generate [_]
     (when-let [vs (seq (util/attr-values attributes "Rights"))]
       (RightsList. (mapv (fn [rights] (Rights. rights)) vs)))))
@@ -309,7 +298,6 @@
   (missing-attributes [_]
     #{})
 
-  mdf/ElementFactory
   (generate [_]
     (let [required-attrs ["Description" "descriptionType"]]
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
@@ -354,7 +342,6 @@
   (missing-attributes [_]
     #{})
 
-  mdf/ElementFactory
   (generate [_]
     (let [ optional-attrs ["geoLocationPoint" "geoLocationBox" "geoLocationPlace"]]
       (when-let [vs (seq (util/associated-attr-values attributes [] optional-attrs))]
@@ -409,7 +396,6 @@
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
-  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)

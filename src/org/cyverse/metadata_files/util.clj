@@ -1,6 +1,6 @@
 (ns org.cyverse.metadata-files.util
   (:require [clojure.string :as string]
-            [clojure.pprint :refer [pprint]]))
+            [org.cyverse.metadata-files :as mdf]))
 
 (defn missing-required-attributes [attribute-names]
   (throw (ex-info (str "Missing required attributes: " (string/join ", " attribute-names))
@@ -54,3 +54,39 @@
         ovs        (extend-associated-optional-values rvs ovs)]
     (validate-associated-required-values required-attribute-names optional-attribute-names rvs ovs)
     (drop-while (partial every? string/blank?) (apply map vector (concat rvs ovs)))))
+
+(defn- get-attr-counts [attributes]
+  (reduce #(update %1 %2 (fnil inc 0)) {} (map :attr attributes)))
+
+(defn- validate-attr-count [attr-counts element-factory]
+  (when-let [attr-name (mdf/attribute-name element-factory)]
+    (let [occurs     (attr-counts attr-name 0)
+          min-occurs (mdf/min-occurs element-factory)
+          max-occurs (mdf/max-occurs element-factory)]
+      (if-not (<= min-occurs occurs max-occurs)
+        [(str "Found " occurs " instances of " attr-name "; expected between " min-occurs " and " max-occurs ".")]
+        []))))
+
+(defn validate-attr-counts [element-factory attributes]
+  (let [child-element-factories (mdf/child-element-factories element-factory)
+        location                (mdf/get-location element-factory)
+        attr-counts             (get-attr-counts attributes)]
+    (when-let [msgs (seq (mapcat (partial validate-attr-count attr-counts) child-element-factories))]
+      (throw (ex-info "Metadata validation failed." {:location location :reasons msgs})))))
+
+(defn get-required-attribute-value [location attributes attribute-name]
+  (if-let [attribute-value (attr-value attributes attribute-name)]
+    attribute-value
+    (throw (ex-info "Missing required attribute." {:location location :attribute attribute-name}))))
+
+(defn validate-child-elements [child-element-factories attributes]
+  (let [attributes-named (group-by :attr attributes)]
+    (doseq [factory   child-element-factories
+            attribute (attributes-named (mdf/attribute-name factory))]
+      (mdf/validate factory attribute))))
+
+(defn build-child-elements [child-element-factories attributes]
+  (let [attributes-named (group-by :attr attributes)]
+    (for [factory   child-element-factories
+          attribute (attributes-named (mdf/attribute-name factory))]
+      (mdf/generate-nested factory attribute))))
