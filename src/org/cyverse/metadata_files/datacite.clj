@@ -18,13 +18,14 @@
     (element ::datacite/identifier {:identifierType type} (string/replace id #"^doi:" ""))))
 
 (deftype IdentifierGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"Identifier" "identifierType"})
 
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
+  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -47,13 +48,14 @@
       (mapv mdf/to-xml creators))))
 
 (deftype CreatorsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"datacite.creator" "creatorAffiliation"})
 
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
+  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -75,13 +77,14 @@
       (mapv mdf/to-xml titles))))
 
 (deftype TitlesGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"datacite.title"})
 
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
+  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -95,13 +98,14 @@
     (element ::datacite/publisher {} publisher)))
 
 (deftype PublisherGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"datacite.publisher"})
 
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
+  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -115,13 +119,14 @@
     (element ::datacite/publicationYear {} year)))
 
 (deftype PublicationYearGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"datacite.publicationyear"})
 
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
+  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -135,13 +140,14 @@
     (element ::datacite/resourceType {:resourceTypeGeneral "Dataset"} resource-type)))
 
 (deftype ResourceTypeGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"datacite.resourcetype"})
 
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
+  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
@@ -161,13 +167,14 @@
       (mapv mdf/to-xml subjects))))
 
 (deftype SubjectsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
   (missing-attributes [_]
     #{})
 
+  mdf/ElementFactory
   (generate [_]
     (when-let [values (seq (util/attr-values attributes "Subject"))]
       (Subjects. (->> (mapcat (fn [s] (string/split s #"\s*,\s*")) values)
@@ -188,13 +195,14 @@
       (mapv mdf/to-xml contributors))))
 
 (deftype ContributorsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
   (missing-attributes [_]
     #{})
 
+  mdf/ElementFactory
   (generate [_]
     (when-let [values (seq (util/associated-attr-values attributes ["contributorName" "contributorType"] []))]
       (Contributors. (mapv (fn [[name type]] (Contributor. name type)) values)))))
@@ -213,13 +221,14 @@
       (mapv mdf/to-xml alternate-ids))))
 
 (deftype AlternateIdsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
   (missing-attributes [_]
     #{})
 
+  mdf/ElementFactory
   (generate [_]
     (let [required-attrs ["AlternateIdentifier" "alternateIdentifierType"]]
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
@@ -240,13 +249,14 @@
       (mapv mdf/to-xml related-ids))))
 
 (deftype RelatedIdsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
   (missing-attributes [_]
     #{})
 
+  mdf/ElementFactory
   (generate [_]
     (let [required-attrs ["RelatedIdentifier" "relatedIdentifierType" "relationType"]]
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
@@ -266,13 +276,14 @@
       (mapv mdf/to-xml rights-list))))
 
 (deftype RightsListGenterator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
   (missing-attributes [_]
     #{})
 
+  mdf/ElementFactory
   (generate [_]
     (when-let [vs (seq (util/attr-values attributes "Rights"))]
       (RightsList. (mapv (fn [rights] (Rights. rights)) vs)))))
@@ -291,13 +302,14 @@
       (mapv mdf/to-xml descriptions))))
 
 (deftype DescriptionsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
   (missing-attributes [_]
     #{})
 
+  mdf/ElementFactory
   (generate [_]
     (let [required-attrs ["Description" "descriptionType"]]
       (when-let [vs (seq (util/associated-attr-values attributes required-attrs []))]
@@ -335,13 +347,14 @@
       (mapv mdf/to-xml geolocations))))
 
 (deftype GeoLocationsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
   (missing-attributes [_]
     #{})
 
+  mdf/ElementFactory
   (generate [_]
     (let [ optional-attrs ["geoLocationPoint" "geoLocationBox" "geoLocationPlace"]]
       (when-let [vs (seq (util/associated-attr-values attributes [] optional-attrs))]
@@ -386,7 +399,7 @@
           (optional-element-factories attributes)))
 
 (deftype DataciteGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     (->> (required-element-factories attributes)
          (map mdf/required-attributes)
@@ -396,6 +409,7 @@
   (missing-attributes [self]
     (util/missing-attributes (mdf/required-attributes self) attributes))
 
+  mdf/ElementFactory
   (generate [self]
     (if-let [missing (seq (mdf/missing-attributes self))]
       (util/missing-required-attributes missing)
