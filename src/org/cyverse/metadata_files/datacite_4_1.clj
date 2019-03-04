@@ -2,6 +2,7 @@
   (:use [clojure.data.xml :only [element]]
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [clojure.string :as string]
+            [org.cyverse.metadata-files.datacite-4-1.creators :as creators]
             [org.cyverse.metadata-files.datacite-4-1.identifier :as identifier]
             [org.cyverse.metadata-files :as mdf]
             [org.cyverse.metadata-files.util :as util]))
@@ -27,9 +28,11 @@
   (max-occurs [_] 1)
 
   (child-element-factories [self]
-    [(identifier/new-identifier-generator (mdf/get-location self))])
+    (let [location (mdf/get-location self)]
+      [(identifier/new-identifier-generator location)
+       (creators/new-creators-generator location)]))
 
-  (get-location [_] "resource")
+  (get-location [_] "")
 
   (validate [self attributes]
     (let [element-factories (mdf/child-element-factories self)]

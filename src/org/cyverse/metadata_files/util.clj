@@ -62,8 +62,9 @@
   (when-let [attr-name (mdf/attribute-name element-factory)]
     (let [occurs     (attr-counts attr-name 0)
           min-occurs (mdf/min-occurs element-factory)
-          max-occurs (mdf/max-occurs element-factory)]
-      (if-not (<= min-occurs occurs max-occurs)
+          max-occurs (mdf/max-occurs element-factory)
+          in-range   (and (<= min-occurs occurs) (or (= max-occurs "unbounded") (<= occurs max-occurs)))]
+      (if-not in-range
         [(str "Found " occurs " instances of " attr-name "; expected between " min-occurs " and " max-occurs ".")]
         []))))
 
@@ -74,19 +75,30 @@
     (when-let [msgs (seq (mapcat (partial validate-attr-count attr-counts) child-element-factories))]
       (throw (ex-info "Metadata validation failed." {:location location :reasons msgs})))))
 
+(defn validate-non-blank-string-attribute-value [location value]
+  (when (string/blank? value)
+    (throw (ex-info "Missing or empty required string attribute value." {:location location}))))
+
 (defn get-required-attribute-value [location attributes attribute-name]
   (if-let [attribute-value (attr-value attributes attribute-name)]
     attribute-value
     (throw (ex-info "Missing required attribute." {:location location :attribute attribute-name}))))
 
-(defn validate-child-elements [child-element-factories attributes]
+(defn- attribute-arg-fn [attributes]
   (let [attributes-named (group-by :attr attributes)]
+    (fn [factory]
+      (if-let [name (mdf/attribute-name factory)]
+        (attributes-named name)
+        [attributes]))))
+
+(defn validate-child-elements [child-element-factories attributes]
+  (let [get-attribute-arg (attribute-arg-fn attributes)]
     (doseq [factory   child-element-factories
-            attribute (attributes-named (mdf/attribute-name factory))]
+            attribute (get-attribute-arg factory)]
       (mdf/validate factory attribute))))
 
 (defn build-child-elements [child-element-factories attributes]
-  (let [attributes-named (group-by :attr attributes)]
+  (let [get-attribute-arg (attribute-arg-fn attributes)]
     (for [factory   child-element-factories
-          attribute (attributes-named (mdf/attribute-name factory))]
+          attribute (get-attribute-arg factory)]
       (mdf/generate-nested factory attribute))))

@@ -8,7 +8,8 @@
   :plugins [[jonase/eastwood "0.3.5"]
             [test2junit "1.2.2"]]
   :eastwood {:exclude-linters [:implicit-dependencies]}
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[medley "1.1.0"]
+                 [org.clojure/clojure "1.8.0"]
                  [org.clojure/data.xml "0.2.0-alpha6"]
                  [org.clojure/tools.logging "0.4.1"]]
   :profiles {:dev {:resource-paths ["test-resources"]}})
