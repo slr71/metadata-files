@@ -4,6 +4,7 @@
   (:require [clojure.string :as string]
             [org.cyverse.metadata-files.datacite-4-1.creators :as creators]
             [org.cyverse.metadata-files.datacite-4-1.identifier :as identifier]
+            [org.cyverse.metadata-files.datacite-4-1.publication-year :as publication-year]
             [org.cyverse.metadata-files.datacite-4-1.publisher :as publisher]
             [org.cyverse.metadata-files.datacite-4-1.titles :as titles]
             [org.cyverse.metadata-files :as mdf]
@@ -34,7 +35,8 @@
       [(identifier/new-identifier-generator location)
        (creators/new-creators-generator location)
        (titles/new-titles-generator location)
-       (publisher/new-publisher-generator location)]))
+       (publisher/new-publisher-generator location)
+       (publication-year/new-publication-year-generator location)]))
 
   (get-location [_] "")
 

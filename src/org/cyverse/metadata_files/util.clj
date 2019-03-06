@@ -79,6 +79,11 @@
   (when (string/blank? value)
     (throw (ex-info "Missing or empty required string attribute value." {:location location}))))
 
+(defn validate-year-attribute-value [location value]
+  (validate-non-blank-string-attribute-value location value)
+  (when-not (re-matches #"\d{4}" value)
+    (throw (ex-info "Incorrect year format; expected YYYY." {:location location :value value}))))
+
 (defn get-required-attribute-value [location attributes attribute-name]
   (if-let [attribute-value (attr-value attributes attribute-name)]
     attribute-value
