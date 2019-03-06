@@ -6,6 +6,7 @@
             [org.cyverse.metadata-files.datacite-4-1.identifier :as identifier]
             [org.cyverse.metadata-files.datacite-4-1.publication-year :as publication-year]
             [org.cyverse.metadata-files.datacite-4-1.publisher :as publisher]
+            [org.cyverse.metadata-files.datacite-4-1.resource-type :as resource-type]
             [org.cyverse.metadata-files.datacite-4-1.titles :as titles]
             [org.cyverse.metadata-files :as mdf]
             [org.cyverse.metadata-files.util :as util]))
@@ -36,7 +37,8 @@
        (creators/new-creators-generator location)
        (titles/new-titles-generator location)
        (publisher/new-publisher-generator location)
-       (publication-year/new-publication-year-generator location)]))
+       (publication-year/new-publication-year-generator location)
+       (resource-type/new-resource-type-generator location)]))
 
   (get-location [_] "")
 
