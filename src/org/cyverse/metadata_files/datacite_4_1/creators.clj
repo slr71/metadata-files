@@ -27,7 +27,6 @@
     (util/validate-non-blank-string-attribute-value (mdf/get-location self) affiliation))
 
   (generate-nested [self {affiliation :value :as attribute}]
-    (mdf/validate self attribute)
     (Affiliation. affiliation)))
 
 (defn new-affiliation-generator [location]
@@ -62,7 +61,6 @@
       (get-name-identifier-scheme-uri location attribute)))
 
   (generate-nested [self {name-identifier :value :as attribute}]
-    (mdf/validate self attribute)
     (let [location (mdf/get-location self)]
       (NameIdentifier. name-identifier
                        (get-name-identifier-scheme location attribute)
@@ -98,7 +96,6 @@
       (util/validate-child-elements (mdf/child-element-factories self) avus)))
 
   (generate-nested [self {avus :avus creator-name :value :as attribute}]
-    (mdf/validate self attribute)
     (Creator. creator-name (util/build-child-elements (mdf/child-element-factories self) avus))))
 
 (defn new-creator-generator [location]
@@ -128,7 +125,6 @@
       (util/validate-child-elements element-factories attributes)))
 
   (generate-nested [self attributes]
-    (mdf/validate self attributes)
     (Creators. (util/build-child-elements (mdf/child-element-factories self) attributes))))
 
 (defn new-creators-generator [location]

@@ -27,7 +27,6 @@
     (get-identifier-type (mdf/get-location self) attribute))
 
   (generate-nested [self attribute]
-    (mdf/validate self attribute)
     (Identifier. (:value attribute)
                  (get-identifier-type (mdf/get-location self) attribute))))
 

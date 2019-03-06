@@ -23,7 +23,6 @@
     (util/validate-non-blank-string-attribute-value (mdf/get-location self) publisher))
 
   (generate-nested [self {publisher :value :as attribute}]
-    (mdf/validate self attribute)
     (Publisher. publisher)))
 
 (defn new-publisher-generator [location]

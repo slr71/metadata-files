@@ -44,8 +44,9 @@
       (util/validate-child-elements (mdf/child-element-factories self) attributes)))
 
   (generate-nested [self attributes]
-    (mdf/validate self attributes)
     (Datacite. (util/build-child-elements (mdf/child-element-factories self) attributes))))
 
 (defn build-datacite [attributes]
-  (mdf/to-xml (mdf/generate-nested (DataciteGenerator.) attributes)))
+  (let [generator (DataciteGenerator.)]
+    (mdf/validate generator attributes)
+    (mdf/to-xml (mdf/generate-nested generator attributes))))

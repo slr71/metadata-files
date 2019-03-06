@@ -39,7 +39,6 @@
       (get-language location attribute)))
 
   (generate-nested [self {title :value :as attribute}]
-    (mdf/validate self attribute)
     (let [location (mdf/get-location self)]
       (Title. title
               (get-title-type location attribute)
@@ -72,7 +71,6 @@
       (util/validate-child-elements element-factories attributes)))
 
   (generate-nested [self attributes]
-    (mdf/validate self attributes)
     (Titles. (util/build-child-elements (mdf/child-element-factories self) attributes))))
 
 (defn new-titles-generator [location]
