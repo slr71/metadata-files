@@ -10,7 +10,7 @@
 (deftype Identifier [id type]
   mdf/XmlSerializable
   (to-xml [_]
-    (element ::datacite/identifier {:identifierType type} (string/replace id #"^doi:" ""))))
+    (element ::datacite/identifier {:identifierType type} (string/replace (string/trim id) #"^doi:" ""))))
 
 (defn- get-identifier-type [location {:keys [avus]}]
   (util/get-required-attribute-value location avus "identifierType"))
