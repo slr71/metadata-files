@@ -13,9 +13,6 @@
 (defn- get-title-type [_ {:keys [avus]}]
   (util/attr-value avus "titleType"))
 
-(defn- get-language [location {:keys [avus]}]
-  (util/get-required-attribute-value location avus "xml:lang"))
-
 (deftype Title [title title-type language]
   mdf/XmlSerializable
   (to-xml [_]
@@ -32,17 +29,17 @@
   (get-location [_]
     (str parent-location ".title"))
 
-  (validate [self {title :value :as attribute}]
+  (validate [self {title :value avus :avus :as attribute}]
     (let [location (mdf/get-location self)]
       (util/validate-non-blank-string-attribute-value location title)
       (get-title-type location attribute)
-      (get-language location attribute)))
+      (util/get-language avus)))
 
-  (generate-nested [self {title :value :as attribute}]
+  (generate-nested [self {title :value avus :avus :as attribute}]
     (let [location (mdf/get-location self)]
       (Title. title
               (get-title-type location attribute)
-              (get-language location attribute)))))
+              (util/get-language avus)))))
 
 (defn new-title-generator [location]
   (TitleGenerator. location))

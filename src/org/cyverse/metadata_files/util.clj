@@ -2,6 +2,8 @@
   (:require [clojure.string :as string]
             [org.cyverse.metadata-files :as mdf]))
 
+(def default-language "US English")
+
 (defn missing-required-attributes [attribute-names]
   (throw (ex-info (str "Missing required attributes: " (string/join ", " attribute-names))
                   {:attributes attribute-names})))
@@ -17,6 +19,9 @@
 
 (defn attr-value [attributes attribute-name]
   (first (attr-values attributes attribute-name)))
+
+(defn get-language [attributes]
+  (or (attr-value attributes "xml:lang") default-language))
 
 (defn- validate-associated-required-values
   "Verifies the number of required attribute values in a set of associated attributes. All required attributes in a set
@@ -104,6 +109,7 @@
 
 (defn build-child-elements [child-element-factories attributes]
   (let [get-attribute-arg (attribute-arg-fn attributes)]
-    (for [factory   child-element-factories
-          attribute (get-attribute-arg factory)]
-      (mdf/generate-nested factory attribute))))
+    (->> (for [factory child-element-factories
+               attribute       (get-attribute-arg factory)]
+           (mdf/generate-nested factory attribute))
+         (remove nil?))))
