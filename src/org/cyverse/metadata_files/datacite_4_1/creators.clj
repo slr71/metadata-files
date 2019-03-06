@@ -26,7 +26,7 @@
   (validate [self {affiliation :value}]
     (util/validate-non-blank-string-attribute-value (mdf/get-location self) affiliation))
 
-  (generate-nested [self {affiliation :value :as attribute}]
+  (generate-nested [_ {affiliation :value :as attribute}]
     (Affiliation. affiliation)))
 
 (defn new-affiliation-generator [location]
