@@ -2,6 +2,7 @@
   (:use [clojure.data.xml :only [element]]
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [clojure.string :as string]
+            [org.cyverse.metadata-files.datacite-4-1.contributors :as contributors]
             [org.cyverse.metadata-files.datacite-4-1.creators :as creators]
             [org.cyverse.metadata-files.datacite-4-1.identifier :as identifier]
             [org.cyverse.metadata-files.datacite-4-1.publication-year :as publication-year]
@@ -40,7 +41,8 @@
        (publisher/new-publisher-generator location)
        (publication-year/new-publication-year-generator location)
        (resource-type/new-resource-type-generator location)
-       (subjects/new-subjects-generator location)]))
+       (subjects/new-subjects-generator location)
+       (contributors/new-contributors-generator location)]))
 
   (get-location [_] "")
 

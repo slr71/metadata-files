@@ -71,7 +71,7 @@
   (child-element-factories [self]
     [(new-title-generator (mdf/get-location self))])
 
-  (get-location [_] (str parent-location))
+  (get-location [_] parent-location)
 
   (validate [self attributes]
     (let [element-factories (mdf/child-element-factories self)]
