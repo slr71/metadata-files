@@ -121,3 +121,39 @@
                    (conj min-attrs {:attr  "subject"
                                     :value "the-subject"
                                     :avus  [{:attr "xml:lang" :value "IT"}]}))))
+
+(deftest test-contributor
+  (testing "DataCite file with a contributor."
+    (test-datacite "datacite-4.1/contributor.xml"
+                   (conj min-attrs {:attr  "contributor"
+                                    :value "the-contributor"
+                                    :avus  [{:attr "contributorType" :value "Editor"}]}))))
+
+(deftest test-contributor-affiliation
+  (testing "DataCite file with a contributor affiliation."
+    (test-datacite "datacite-4.1/contributor-affiliation.xml"
+                   (conj min-attrs {:attr  "contributor"
+                                    :value "the-contributor"
+                                    :avus  [{:attr "contributorType" :value "Editor"}
+                                            {:attr "affiliation" :value "CyVerse"}]}))))
+
+(deftest test-contributor-name-identifier
+  (testing "DataCite file with a contributor name identifier."
+    (test-datacite "datacite-4.1/contributor-name-identifier.xml"
+                   (conj min-attrs {:attr  "contributor"
+                                    :value "the-contributor"
+                                    :avus  [{:attr "contributorType" :value "Editor"}
+                                            {:attr "nameIdentifier"
+                                             :value "the-name-identifier"
+                                             :avus  [{:attr "nameIdentifierScheme" :value "ORCID"}]}]}))))
+
+(deftest test-invalid-contributor-type
+  (testing "DataCite file with an invalid contributor type."
+    (test-invalid-attribute (conj min-attrs {:attr  "contributor"
+                                             :value "the-contributor"
+                                             :avus  [{:attr "contributorType" :value "Fiddler"}]})
+                            "contributorType")))
+
+(deftest test-missing-contributor-type
+  (testing "DataCite file with a missing contributor type."
+    (test-missing-attribute (conj min-attrs {:attr  "contributor" :value "the-contributor"}))))
