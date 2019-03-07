@@ -5,6 +5,7 @@
             [org.cyverse.metadata-files.datacite-4-1.contributors :as contributors]
             [org.cyverse.metadata-files.datacite-4-1.creators :as creators]
             [org.cyverse.metadata-files.datacite-4-1.identifier :as identifier]
+            [org.cyverse.metadata-files.datacite-4-1.language :as language]
             [org.cyverse.metadata-files.datacite-4-1.publication-year :as publication-year]
             [org.cyverse.metadata-files.datacite-4-1.publisher :as publisher]
             [org.cyverse.metadata-files.datacite-4-1.resource-type :as resource-type]
@@ -42,7 +43,8 @@
        (publication-year/new-publication-year-generator location)
        (resource-type/new-resource-type-generator location)
        (subjects/new-subjects-generator location)
-       (contributors/new-contributors-generator location)]))
+       (contributors/new-contributors-generator location)
+       (language/new-language-generator location)]))
 
   (get-location [_] "")
 

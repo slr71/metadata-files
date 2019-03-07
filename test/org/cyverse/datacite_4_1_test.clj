@@ -157,3 +157,7 @@
 (deftest test-missing-contributor-type
   (testing "DataCite file with a missing contributor type."
     (test-missing-attribute (conj min-attrs {:attr  "contributor" :value "the-contributor"}))))
+
+(deftest test-language
+  (testing "DataCite file with a specified language."
+    (test-datacite "datacite-4.1/language.xml" (conj min-attrs {:attr "language" :value "en-us"}))))
