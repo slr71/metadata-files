@@ -51,37 +51,37 @@
 (deftest test-affiliation
   (testing "DataCite file with creator affiliation."
     (test-datacite "datacite-4.1/affiliation.xml"
-                   (update-in min-attrs [1 :avus] (constantly [{:attr "affiliation" :value "CyVerse"}])))))
+                   (assoc-in min-attrs [1 :avus] [{:attr "affiliation" :value "CyVerse"}]))))
 
 (deftest test-name-identifier
   (testing "DataCite file with name identifier."
     (test-datacite "datacite-4.1/name-identifier.xml"
-                   (update-in min-attrs [1 :avus] (constantly [{:attr  "nameIdentifier"
-                                                                :value "foo"
-                                                                :avus  [{:attr  "nameIdentifierScheme"
-                                                                         :value "ORCID"}]}])))))
+                   (assoc-in min-attrs [1 :avus] [{:attr  "nameIdentifier"
+                                                   :value "foo"
+                                                   :avus  [{:attr  "nameIdentifierScheme"
+                                                            :value "ORCID"}]}]))))
 (deftest test-scheme-uri
   (testing "DataCite file with a name identifier and a scheme URI."
     (test-datacite "datacite-4.1/scheme-uri.xml"
-                   (update-in min-attrs [1 :avus] (constantly [{:attr  "nameIdentifier"
-                                                                :value "foo"
-                                                                :avus  [{:attr  "nameIdentifierScheme"
-                                                                         :value "ORCID"}
-                                                                        {:attr  "schemeURI"
-                                                                         :value "https://orcid.org"}]}])))))
+                   (assoc-in min-attrs [1 :avus] [{:attr  "nameIdentifier"
+                                                   :value "foo"
+                                                   :avus  [{:attr  "nameIdentifierScheme"
+                                                            :value "ORCID"}
+                                                           {:attr  "schemeURI"
+                                                            :value "https://orcid.org"}]}]))))
 (deftest test-missing-name-identifier-scheme
   (testing "DataCite file with a name identifier missing its scheme."
-    (test-missing-attribute (update-in min-attrs [1 :avus] (constantly [{:attr  "nameIdentifier"
-                                                                         :value "foo"}])))))
+    (test-missing-attribute (assoc-in min-attrs [1 :avus] [{:attr  "nameIdentifier"
+                                                            :value "foo"}]))))
 
 (deftest test-title-type
   (testing "DataCite file with a title type."
     (test-datacite "datacite-4.1/title-type.xml"
-                    (update-in min-attrs [2 :avus] (constantly [{:attr "titleType" :value "Other"}])))))
+                   (assoc-in min-attrs [2 :avus] [{:attr "titleType" :value "Other"}]))))
 
 (deftest test-invalid-title-type
   (testing "DataCite file with an invalid title type."
-    (test-invalid-attribute (update-in min-attrs [2 :avus] (constantly [{:attr "titleType" :value "Foo"}]))
+    (test-invalid-attribute (assoc-in min-attrs [2 :avus] [{:attr "titleType" :value "Foo"}])
                             "titleType")))
 
 (deftest test-invalid-resource-type-general
