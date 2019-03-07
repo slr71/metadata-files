@@ -9,8 +9,8 @@
 
 (def ^:private min-attrs
   [{:attr "identifier" :value "   doi:10.1000/182" :avus [{:attr "identifierType" :value "DOI"}]}
-   {:attr "creator" :value "the-creator" :avus [{:attr "affiliation" :value "CyVerse"}]}
-   {:attr "title" :value "the-title" :avus [{:attr "xml:lang" :value "EN-US"}]}
+   {:attr "creator" :value "the-creator"}
+   {:attr "title" :value "the-title"}
    {:attr "publisher" :value "CyVerse"}
    {:attr "publicationYear" :value "2019"}
    {:attr "resourceType" :value "XML" :avus [{:attr "resourceTypeGeneral" :value "Dataset"}]}])
@@ -27,6 +27,11 @@
 (defn- test-missing-element-attributes [attrs]
   (is (thrown-with-msg? clojure.lang.ExceptionInfo
                         (re-pattern "Metadata validation failed.")
+                        (build-datacite attrs))))
+
+(defn- test-missing-attribute [attrs]
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        (re-pattern "Missing required attribute.")
                         (build-datacite attrs))))
 
 (deftest test-minimal

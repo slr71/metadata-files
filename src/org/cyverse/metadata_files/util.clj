@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [org.cyverse.metadata-files :as mdf]))
 
-(def default-language "US English")
+(def default-language "EN-US")
 
 (defn missing-required-attributes [attribute-names]
   (throw (ex-info (str "Missing required attributes: " (string/join ", " attribute-names))
