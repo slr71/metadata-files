@@ -24,6 +24,16 @@
 (defn- debug-datacite [file attrs]
   (test-xml file (build-datacite attrs) schema-url true))
 
+(defn- test-missing-element-attributes [attrs]
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        (re-pattern "Metadata validation failed.")
+                        (build-datacite attrs))))
+
 (deftest test-minimal
   (testing "Minimal DataCite file."
-    (debug-datacite "datacite-4.1/minimal.xml" min-attrs)))
+    (test-datacite "datacite-4.1/minimal.xml" min-attrs)))
+
+(deftest test-missing-top-level-element-attributes
+  (testing "Missing top-level attributes."
+    (doseq [attr-name (mapv :attr min-attrs)]
+      (test-missing-element-attributes (remove (comp (partial = attr-name) :attr) min-attrs)))))
