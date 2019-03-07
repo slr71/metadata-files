@@ -87,3 +87,37 @@
 (deftest test-invalid-resource-type-general
   (testing "DataCite file with an invalid resourceTypeGeneral attribute."
     (test-invalid-attribute (assoc-in min-attrs [5 :avus 0 :value] "Foo") "resourceTypeGeneral")))
+
+(deftest test-subject
+  (testing "DataCite file with a subject."
+    (test-datacite "datacite-4.1/subject.xml"
+                   (conj min-attrs {:attr "subject" :value "the-subject"}))))
+
+(deftest test-subject-scheme
+  (testing "DataCite file with a subject scheme."
+    (test-datacite "datacite-4.1/subject-scheme.xml"
+                   (conj min-attrs {:attr  "subject"
+                                    :value "the-subject"
+                                    :avus  [{:attr "subjectScheme" :value "scheme"}]}))))
+
+(deftest test-subject-scheme-uri
+  (testing "DataCite file with a subject scheme URI."
+    (test-datacite "datacite-4.1/subject-scheme-uri.xml"
+                   (conj min-attrs {:attr  "subject"
+                                    :value "the-subject"
+                                    :avus  [{:attr "subjectScheme" :value "scheme"}
+                                            {:attr "schemeURI" :value "https://scheme.org"}]}))))
+
+(deftest test-subject-value-uri
+  (testing "DataCite file with a subject value URI."
+    (test-datacite "datacite-4.1/subject-value-uri.xml"
+                   (conj min-attrs {:attr  "subject"
+                                    :value "the-subject"
+                                    :avus  [{:attr "valueURI" :value "https://example.org"}]}))))
+
+(deftest test-custom-subject-language
+  (testing "DataCite file with a custom subject language."
+    (test-datacite "datacite-4.1/subject-custom-lang.xml"
+                   (conj min-attrs {:attr  "subject"
+                                    :value "the-subject"
+                                    :avus  [{:attr "xml:lang" :value "IT"}]}))))
