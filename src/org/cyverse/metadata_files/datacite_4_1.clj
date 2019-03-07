@@ -2,15 +2,16 @@
   (:use [clojure.data.xml :only [element]]
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [clojure.string :as string]
-            [org.cyverse.metadata-files.datacite-4-1.contributors :as contributors]
-            [org.cyverse.metadata-files.datacite-4-1.creators :as creators]
-            [org.cyverse.metadata-files.datacite-4-1.identifier :as identifier]
-            [org.cyverse.metadata-files.datacite-4-1.language :as language]
-            [org.cyverse.metadata-files.datacite-4-1.publication-year :as publication-year]
-            [org.cyverse.metadata-files.datacite-4-1.publisher :as publisher]
-            [org.cyverse.metadata-files.datacite-4-1.resource-type :as resource-type]
-            [org.cyverse.metadata-files.datacite-4-1.subjects :as subjects]
-            [org.cyverse.metadata-files.datacite-4-1.titles :as titles]
+            [org.cyverse.metadata-files.datacite-4-1
+             [contributors :as contributors]
+             [creators :as creators]
+             [identifier :as identifier]
+             [language :as language]
+             [publication-year :as publication-year]
+             [publisher :as publisher]
+             [resource-type :as resource-type]
+             [subjects :as subjects]
+             [titles :as titles]]
             [org.cyverse.metadata-files :as mdf]
             [org.cyverse.metadata-files.util :as util]))
 
