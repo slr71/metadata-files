@@ -83,3 +83,7 @@
   (testing "DataCite file with an invalid title type."
     (test-invalid-attribute (update-in min-attrs [2 :avus] (constantly [{:attr "titleType" :value "Foo"}]))
                             "titleType")))
+
+(deftest test-invalid-resource-type-general
+  (testing "DataCite file with an invalid resourceTypeGeneral attribute."
+    (test-invalid-attribute (assoc-in min-attrs [5 :avus 0 :value] "Foo") "resourceTypeGeneral")))
