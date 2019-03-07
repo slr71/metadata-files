@@ -10,8 +10,19 @@
 
 ;; The title element
 
-(defn- get-title-type [_ {:keys [avus]}]
-  (util/attr-value avus "titleType"))
+(def ^:private valid-title-types #{"AlternativeTitle" "Subtitle" "TranslatedTitle" "Other"})
+
+(defn- get-title-type [location {:keys [avus]}]
+  (let [attribute-name "titleType"
+        title-type     (util/attr-value avus attribute-name)]
+    (when-not (string/blank? title-type)
+      (when-not (valid-title-types title-type)
+        (throw (ex-info (str "Invalid " attribute-name " value.")
+                        {:location     location
+                         :attribute    attribute-name
+                         :value        title-type
+                         :valid-values valid-title-types})))
+      title-type)))
 
 (deftype Title [title title-type language]
   mdf/XmlSerializable

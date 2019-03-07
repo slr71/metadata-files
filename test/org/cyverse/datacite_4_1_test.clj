@@ -26,12 +26,17 @@
 
 (defn- test-missing-element-attributes [attrs]
   (is (thrown-with-msg? clojure.lang.ExceptionInfo
-                        (re-pattern "Metadata validation failed.")
+                        #"Metadata validation failed."
                         (build-datacite attrs))))
 
 (defn- test-missing-attribute [attrs]
   (is (thrown-with-msg? clojure.lang.ExceptionInfo
-                        (re-pattern "Missing required attribute.")
+                        #"Missing required attribute."
+                        (build-datacite attrs))))
+
+(defn- test-invalid-attribute [attrs invalid-attr]
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        (re-pattern (str "Invalid " invalid-attr " value."))
                         (build-datacite attrs))))
 
 (deftest test-minimal
@@ -71,5 +76,10 @@
 
 (deftest test-title-type
   (testing "DataCite file with a title type."
-    (debug-datacite "datacite-4.1/title-type.xml"
+    (test-datacite "datacite-4.1/title-type.xml"
                     (update-in min-attrs [2 :avus] (constantly [{:attr "titleType" :value "Other"}])))))
+
+(deftest test-invalid-title-type
+  (testing "DataCite file with an invalid title type."
+    (test-invalid-attribute (update-in min-attrs [2 :avus] (constantly [{:attr "titleType" :value "Foo"}]))
+                            "titleType")))
