@@ -193,3 +193,8 @@
     (test-missing-attribute (conj min-attrs {:attr "relatedIdentifier"
                                              :value "https://example.org"
                                              :avus [{:attr "relatedIdentifierType" :value "URL"}]}))))
+
+(deftest test-size
+  (testing "DataCite file with a size."
+    (test-datacite "datacite-4.1/size.xml"
+                   (conj min-attrs {:attr "size" :value "All the gigabytes!"}))))

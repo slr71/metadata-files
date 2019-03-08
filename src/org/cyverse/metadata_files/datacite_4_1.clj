@@ -12,6 +12,7 @@
              [publisher :as publisher]
              [related-identifiers :as related-identifiers]
              [resource-type :as resource-type]
+             [sizes :as sizes]
              [subjects :as subjects]
              [titles :as titles]]
             [org.cyverse.metadata-files :as mdf]
@@ -49,7 +50,8 @@
        (contributors/new-contributors-generator location)
        (language/new-language-generator location)
        (alternate-identifiers/new-alternate-identifiers-generator location)
-       (related-identifiers/new-related-identifiers-generator location)]))
+       (related-identifiers/new-related-identifiers-generator location)
+       (sizes/new-sizes-generator location)]))
 
   (get-location [_] "")
 

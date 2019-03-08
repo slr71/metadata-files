@@ -76,7 +76,7 @@
                     (get-contributor-type location attribute)
                     (util/build-child-elements (mdf/child-element-factories self) avus)))))
 
-(defn- new-contributor-generator [location]
+(defn new-contributor-generator [location]
   (ContributorGenerator. location))
 
 ;; The contributors element
