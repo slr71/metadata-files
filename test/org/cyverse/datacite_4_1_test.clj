@@ -198,3 +198,8 @@
   (testing "DataCite file with a size."
     (test-datacite "datacite-4.1/size.xml"
                    (conj min-attrs {:attr "size" :value "All the gigabytes!"}))))
+
+(deftest test-format
+  (testing "DataCite file with a format."
+    (test-datacite "datacite-4.1/format.xml"
+                   (conj min-attrs {:attr "format" :value "text/plain"}))))

@@ -6,6 +6,7 @@
              [alternate-identifiers :as alternate-identifiers]
              [contributors :as contributors]
              [creators :as creators]
+             [formats :as formats]
              [identifier :as identifier]
              [language :as language]
              [publication-year :as publication-year]
@@ -51,7 +52,8 @@
        (language/new-language-generator location)
        (alternate-identifiers/new-alternate-identifiers-generator location)
        (related-identifiers/new-related-identifiers-generator location)
-       (sizes/new-sizes-generator location)]))
+       (sizes/new-sizes-generator location)
+       (formats/new-formats-generator location)]))
 
   (get-location [_] "")
 
