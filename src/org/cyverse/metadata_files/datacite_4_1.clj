@@ -3,6 +3,7 @@
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [clojure.string :as string]
             [org.cyverse.metadata-files.datacite-4-1
+             [alternate-identifiers :as alternate-identifiers]
              [contributors :as contributors]
              [creators :as creators]
              [identifier :as identifier]
@@ -45,7 +46,8 @@
        (resource-type/new-resource-type-generator location)
        (subjects/new-subjects-generator location)
        (contributors/new-contributors-generator location)
-       (language/new-language-generator location)]))
+       (language/new-language-generator location)
+       (alternate-identifiers/new-alternate-identifiers-generator location)]))
 
   (get-location [_] "")
 

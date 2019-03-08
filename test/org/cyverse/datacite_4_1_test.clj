@@ -161,3 +161,15 @@
 (deftest test-language
   (testing "DataCite file with a specified language."
     (test-datacite "datacite-4.1/language.xml" (conj min-attrs {:attr "language" :value "en-us"}))))
+
+(deftest test-alternate-identifier
+  (testing "DataCite file with an alternate identifier."
+    (test-datacite "datacite-4.1/alternate-identifier.xml"
+                   (conj min-attrs {:attr  "alternateIdentifier"
+                                    :value "the-alt-id"
+                                    :avus  [{:attr "alternateIdentifierType" :value "the-alt-id-type"}]}))))
+
+(deftest test-missing-alternate-identifier-type
+  (testing "DataCite file with a missing alternate identifier type."
+    (test-missing-attribute (conj min-attrs {:attr  "alternateIdentifier"
+                                             :value "the-alt-id"}))))

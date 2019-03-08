@@ -90,9 +90,10 @@
     (throw (ex-info "Incorrect year format; expected YYYY." {:location location :value value}))))
 
 (defn get-required-attribute-value [location attributes attribute-name]
-  (if-let [attribute-value (attr-value attributes attribute-name)]
-    attribute-value
-    (throw (ex-info "Missing required attribute." {:location location :attribute attribute-name}))))
+  (let [attribute-value (attr-value attributes attribute-name)]
+    (if (string/blank? attribute-value)
+      (throw (ex-info "Missing required attribute." {:location location :attribute attribute-name}))
+      attribute-value)))
 
 (defn- attribute-arg-fn [attributes]
   (let [attributes-named (group-by :attr attributes)]
