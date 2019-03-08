@@ -173,3 +173,23 @@
   (testing "DataCite file with a missing alternate identifier type."
     (test-missing-attribute (conj min-attrs {:attr  "alternateIdentifier"
                                              :value "the-alt-id"}))))
+
+(deftest test-related-identifier
+  (testing "DataCite file with a related identifier."
+    (test-datacite "datacite-4.1/related-identifier.xml"
+                   (conj min-attrs {:attr "relatedIdentifier"
+                                    :value "https://example.org"
+                                    :avus [{:attr "relatedIdentifierType" :value "URL"}
+                                           {:attr "relationType" :value "IsDescribedBy"}]}))))
+
+(deftest test-missing-related-identifier-type
+  (testing "DataCite file with a missing related identifier type."
+    (test-missing-attribute (conj min-attrs {:attr "relatedIdentifier"
+                                             :value "https://example.org"
+                                             :avus [{:attr "relationType" :value "IsDescribedBy"}]}))))
+
+(deftest test-missing-relation-type
+  (testing "DataCite file with a missing relation type."
+    (test-missing-attribute (conj min-attrs {:attr "relatedIdentifier"
+                                             :value "https://example.org"
+                                             :avus [{:attr "relatedIdentifierType" :value "URL"}]}))))

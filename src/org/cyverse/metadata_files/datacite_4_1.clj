@@ -10,6 +10,7 @@
              [language :as language]
              [publication-year :as publication-year]
              [publisher :as publisher]
+             [related-identifiers :as related-identifiers]
              [resource-type :as resource-type]
              [subjects :as subjects]
              [titles :as titles]]
@@ -47,7 +48,8 @@
        (subjects/new-subjects-generator location)
        (contributors/new-contributors-generator location)
        (language/new-language-generator location)
-       (alternate-identifiers/new-alternate-identifiers-generator location)]))
+       (alternate-identifiers/new-alternate-identifiers-generator location)
+       (related-identifiers/new-related-identifiers-generator location)]))
 
   (get-location [_] "")
 
