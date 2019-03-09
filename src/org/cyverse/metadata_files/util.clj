@@ -110,7 +110,7 @@
 
 (defn build-child-elements [child-element-factories attributes]
   (let [get-attribute-arg (attribute-arg-fn attributes)]
-    (->> (for [factory child-element-factories
-               attribute       (get-attribute-arg factory)]
+    (->> (for [factory   child-element-factories
+               attribute (get-attribute-arg factory)]
            (mdf/generate-nested factory attribute))
          (remove nil?))))

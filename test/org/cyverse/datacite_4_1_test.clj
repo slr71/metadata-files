@@ -24,7 +24,7 @@
 (defn- debug-datacite [file attrs]
   (test-xml file (build-datacite attrs) schema-url true))
 
-(defn- test-missing-element-attributes [attrs]
+(defn- test-metadata-validation-failure [attrs]
   (is (thrown-with-msg? clojure.lang.ExceptionInfo
                         #"Metadata validation failed."
                         (build-datacite attrs))))
@@ -46,7 +46,7 @@
 (deftest test-missing-top-level-element-attributes
   (testing "Missing top-level attributes."
     (doseq [attr-name (mapv :attr min-attrs)]
-      (test-missing-element-attributes (remove (comp (partial = attr-name) :attr) min-attrs)))))
+      (test-metadata-validation-failure (remove (comp (partial = attr-name) :attr) min-attrs)))))
 
 (deftest test-affiliation
   (testing "DataCite file with creator affiliation."
@@ -203,3 +203,13 @@
   (testing "DataCite file with a format."
     (test-datacite "datacite-4.1/format.xml"
                    (conj min-attrs {:attr "format" :value "text/plain"}))))
+
+(deftest test-version
+  (testing "DataCite file with a version."
+    (test-datacite "datacite-4.1/version.xml"
+                   (conj min-attrs {:attr "version" :value "1"}))))
+
+(deftest test-multiple-versions
+  (testing "DataCite file with too many versions."
+    (test-metadata-validation-failure (concat min-attrs [{:attr "version" :value "1"}
+                                                         {:attr "version" :value "2"}]))))

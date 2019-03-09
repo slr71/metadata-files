@@ -15,7 +15,8 @@
              [resource-type :as resource-type]
              [sizes :as sizes]
              [subjects :as subjects]
-             [titles :as titles]]
+             [titles :as titles]
+             [version :as version]]
             [org.cyverse.metadata-files :as mdf]
             [org.cyverse.metadata-files.util :as util]))
 
@@ -53,7 +54,8 @@
        (alternate-identifiers/new-alternate-identifiers-generator location)
        (related-identifiers/new-related-identifiers-generator location)
        (sizes/new-sizes-generator location)
-       (formats/new-formats-generator location)]))
+       (formats/new-formats-generator location)
+       (version/new-version-generator location)]))
 
   (get-location [_] "")
 
