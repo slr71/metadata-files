@@ -13,6 +13,7 @@
              [publisher :as publisher]
              [related-identifiers :as related-identifiers]
              [resource-type :as resource-type]
+             [rights-list :as rights-list]
              [sizes :as sizes]
              [subjects :as subjects]
              [titles :as titles]
@@ -55,7 +56,8 @@
        (related-identifiers/new-related-identifiers-generator location)
        (sizes/new-sizes-generator location)
        (formats/new-formats-generator location)
-       (version/new-version-generator location)]))
+       (version/new-version-generator location)
+       (rights-list/new-rights-list-generator location)]))
 
   (get-location [_] "")
 

@@ -213,3 +213,15 @@
   (testing "DataCite file with too many versions."
     (test-metadata-validation-failure (concat min-attrs [{:attr "version" :value "1"}
                                                          {:attr "version" :value "2"}]))))
+
+(deftest test-rights
+  (testing "DataCite file with a rights list."
+    (test-datacite "datacite-4.1/rights-list.xml"
+                   (conj min-attrs {:attr "rights" :value "ODC PDDL"}))))
+
+(deftest test-rights-uri
+  (testing "DataCite file with a rights URI."
+    (test-datacite "datacite-4.1/rights-uri.xml"
+                   (conj min-attrs {:attr  "rights"
+                                    :value "ODC PDDL"
+                                    :avus  [{:attr "rightsURI" :value "https://example.org"}]}))))
