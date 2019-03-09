@@ -6,6 +6,7 @@
              [alternate-identifiers :as alternate-identifiers]
              [contributors :as contributors]
              [creators :as creators]
+             [descriptions :as descriptions]
              [formats :as formats]
              [identifier :as identifier]
              [language :as language]
@@ -57,7 +58,8 @@
        (sizes/new-sizes-generator location)
        (formats/new-formats-generator location)
        (version/new-version-generator location)
-       (rights-list/new-rights-list-generator location)]))
+       (rights-list/new-rights-list-generator location)
+       (descriptions/new-descriptions-generator location)]))
 
   (get-location [_] "")
 

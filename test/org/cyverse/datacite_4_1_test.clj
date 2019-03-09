@@ -225,3 +225,29 @@
                    (conj min-attrs {:attr  "rights"
                                     :value "ODC PDDL"
                                     :avus  [{:attr "rightsURI" :value "https://example.org"}]}))))
+
+(deftest test-desription
+  (testing "DataCite file with a description."
+    (test-datacite "datacite-4.1/description.xml"
+                   (conj min-attrs {:attr  "description"
+                                    :value "the-description"
+                                    :avus  [{:attr "descriptionType" :value "Abstract"}]}))))
+
+(deftest test-custom-description-language
+  (testing "DataCite file with a custom description language."
+    (test-datacite "datacite-4.1/description-language.xml"
+                   (conj min-attrs {:attr  "description"
+                                    :value "the-description"
+                                    :avus  [{:attr "descriptionType" :value "Abstract"}
+                                            {:attr "xml:lang" :value "it"}]}))))
+
+(deftest test-missing-description-type
+  (testing "DataCite file with a missing description type."
+    (test-missing-attribute (conj min-attrs {:attr "description" :value "the-description"}))))
+
+(deftest test-invalid-description-type
+  (testing "DataCite file with an invalid description type."
+    (test-invalid-attribute (conj min-attrs {:attr  "description"
+                                             :value "the-description"
+                                             :avus  [{:attr "descriptionType" :value "Blah"}]})
+                            "descriptionType")))
