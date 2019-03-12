@@ -2,6 +2,7 @@
   (:use [clojure.data.xml :only [element]]
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [org.cyverse.metadata-files :as mdf]
+            [org.cyverse.metadata-files.container-nested-element :as cne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -160,61 +161,24 @@
 
 ;; The geoLocation element
 
-(deftype GeoLocation [child-elements]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/geoLocation {} (mapv mdf/to-xml child-elements))))
-
-(deftype GeoLocationGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "geoLocation")
-  (min-occurs [_] 0)
-  (max-occurs [_] "unbounded")
-  (get-location [_] (str parent-location ".geoLocation"))
-
-  (child-element-factories [self]
-    (let [location (mdf/get-location self)]
-      [(new-geo-location-place-generator location)
-       (new-geo-location-point-generator location)
-       (new-geo-location-box-generator location)]))
-
-  (validate [self {:keys [avus]}]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self avus)
-      (util/validate-child-elements element-factories avus)))
-
-  (generate-nested [self {:keys [avus]}]
-    (when-let [child-elements (seq (util/build-child-elements (mdf/child-element-factories self) avus))]
-      (GeoLocation. child-elements))))
-
 (defn new-geo-location-generator [location]
-  (GeoLocationGenerator. location))
+  (let [attr-name "geoLocation"
+        min-occurs 0
+        max-occurs "unbounded"
+        child-element-factory-fns [new-geo-location-place-generator
+                                   new-geo-location-point-generator
+                                   new-geo-location-box-generator]
+        tag ::datacite/geoLocation]
+    (cne/new-container-nested-element-generator attr-name min-occurs max-occurs child-element-factory-fns
+                                                tag location)))
 
 ;; The geoLocations element
 
-(deftype GeoLocations [geo-locations]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/geoLocations {} (mapv mdf/to-xml geo-locations))))
-
-(deftype GeoLocationsGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] nil)
-  (min-occurs [_] 0)
-  (max-occurs [_] 1)
-  (get-location [_] parent-location)
-
-  (child-element-factories [self]
-    [(new-geo-location-generator (mdf/get-location self))])
-
-  (validate [self attributes]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self attributes)
-      (util/validate-child-elements element-factories attributes)))
-
-  (generate-nested [self attributes]
-    (when-let [geo-locations (seq (util/build-child-elements (mdf/child-element-factories self) attributes))]
-      (GeoLocations. geo-locations))))
-
 (defn new-geo-locations-generator [location]
-  (GeoLocationsGenerator. location))
+  (let [attr-name                 nil
+        min-occurs                0
+        max-occurs                1
+        child-element-factory-fns [new-geo-location-generator]
+        tag                       ::datacite/geoLocations]
+    (cne/new-container-nested-element-generator attr-name min-occurs max-occurs child-element-factory-fns
+                                                tag location)))
