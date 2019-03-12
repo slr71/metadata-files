@@ -2,6 +2,7 @@
   (:use [clojure.data.xml :only [element]]
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [org.cyverse.metadata-files :as mdf]
+            [org.cyverse.metadata-files.container-nested-element :as cne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -32,27 +33,9 @@
 
 ;; The sizes element
 
-(deftype Sizes [sizes]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/sizes {} (mapv mdf/to-xml sizes))))
-
-(deftype SizesGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] nil)
-  (min-occurs [_] 0)
-  (max-occurs [_] 1)
-  (get-location [_] parent-location)
-  (child-element-factories [self] [(new-size-generator (mdf/get-location self))])
-
-  (validate [self attributes]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self attributes)
-      (util/validate-child-elements element-factories attributes)))
-
-  (generate-nested [self attributes]
-    (when-let [sizes (seq (util/build-child-elements (mdf/child-element-factories self) attributes))]
-      (Sizes. sizes))))
-
 (defn new-sizes-generator [location]
-  (SizesGenerator. location))
+  (cne/new-container-nested-element-generator
+   {:min-occurs          0
+    :element-factory-fns [new-size-generator]
+    :tag                 ::datacite/sizes
+    :parent-location     location}))

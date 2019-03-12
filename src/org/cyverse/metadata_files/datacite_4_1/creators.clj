@@ -2,6 +2,7 @@
   (:use [clojure.data.xml :only [element]]
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [org.cyverse.metadata-files :as mdf]
+            [org.cyverse.metadata-files.container-nested-element :as cne]
             [org.cyverse.metadata-files.datacite-4-1.affiliation :as affiliation]
             [org.cyverse.metadata-files.datacite-4-1.name-identifier :as name-identifier]
             [org.cyverse.metadata-files.util :as util]))
@@ -42,29 +43,8 @@
 
 ;; The creators element
 
-(deftype Creators [creators]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/creators {} (mapv mdf/to-xml creators))))
-
-(deftype CreatorsGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] nil)
-  (min-occurs [_] 1)
-  (max-occurs [_] 1)
-
-  (child-element-factories [self]
-    [(new-creator-generator (mdf/get-location self))])
-
-  (get-location [_] parent-location)
-
-  (validate [self attributes]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self attributes)
-      (util/validate-child-elements element-factories attributes)))
-
-  (generate-nested [self attributes]
-    (Creators. (util/build-child-elements (mdf/child-element-factories self) attributes))))
-
 (defn new-creators-generator [location]
-  (CreatorsGenerator. location))
+  (cne/new-container-nested-element-generator
+   {:element-factory-fns [new-creator-generator]
+    :tag                 ::datacite/creators
+    :parent-location     location}))

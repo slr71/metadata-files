@@ -4,6 +4,7 @@
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [clojure.string :as string]
             [org.cyverse.metadata-files :as mdf]
+            [org.cyverse.metadata-files.container-nested-element :as cne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -57,29 +58,8 @@
 
 ;; The titles element
 
-(deftype Titles [titles]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/titles {} (mapv mdf/to-xml titles))))
-
-(deftype TitlesGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] nil)
-  (min-occurs [_] 1)
-  (max-occurs [_] 1)
-
-  (child-element-factories [self]
-    [(new-title-generator (mdf/get-location self))])
-
-  (get-location [_] parent-location)
-
-  (validate [self attributes]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self attributes)
-      (util/validate-child-elements element-factories attributes)))
-
-  (generate-nested [self attributes]
-    (Titles. (util/build-child-elements (mdf/child-element-factories self) attributes))))
-
 (defn new-titles-generator [location]
-  (TitlesGenerator. location))
+  (cne/new-container-nested-element-generator
+   {:element-factory-fns [new-title-generator]
+    :tag                 ::datacite/titles
+    :parent-location     location}))

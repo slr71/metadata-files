@@ -4,6 +4,7 @@
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [clojure.string :as string]
             [org.cyverse.metadata-files :as mdf]
+            [org.cyverse.metadata-files.container-nested-element :as cne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -53,29 +54,9 @@
 
 ;; The desriptions element
 
-(deftype Descriptions [descriptions]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/descriptions {} (mapv mdf/to-xml descriptions))))
-
-(deftype DescriptionsGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] nil)
-  (min-occurs [_] 0)
-  (max-occurs [_] 1)
-  (get-location [_] parent-location)
-
-  (child-element-factories [self]
-    [(new-description-generator (mdf/get-location self))])
-
-  (validate [self attributes]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self attributes)
-      (util/validate-child-elements element-factories attributes)))
-
-  (generate-nested [self attributes]
-    (when-let [descriptions (seq (util/build-child-elements (mdf/child-element-factories self) attributes))]
-      (Descriptions. descriptions))))
-
 (defn new-descriptions-generator [location]
-  (DescriptionsGenerator. location))
+  (cne/new-container-nested-element-generator
+   {:min-occurs          0
+    :element-factory-fns [new-description-generator]
+    :tag                 ::datacite/descriptions
+    :parent-location     location}))

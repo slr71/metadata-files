@@ -2,6 +2,7 @@
   (:use [clojure.data.xml :only [element]]
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [org.cyverse.metadata-files :as mdf]
+            [org.cyverse.metadata-files.container-nested-element :as cne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -97,4 +98,8 @@
       (RelatedIdentifiers. related-identifiers))))
 
 (defn new-related-identifiers-generator [location]
-  (RelatedIdentifiersGenerator. location))
+  (cne/new-container-nested-element-generator
+   {:min-occurs          0
+    :element-factory-fns [new-related-identifier-generator]
+    :tag                 ::datacite/relatedIdentifiers
+    :parent-location     location}))

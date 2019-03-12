@@ -4,6 +4,7 @@
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [clojure.string :as string]
             [org.cyverse.metadata-files :as mdf]
+            [org.cyverse.metadata-files.container-nested-element :as cne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -60,30 +61,9 @@
 
 ;; The subjects element
 
-(deftype Subjects [subjects]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/subjects {} (mapv mdf/to-xml subjects))))
-
-(deftype SubjectsGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] nil)
-  (min-occurs [_] 0)
-  (max-occurs [_] 1)
-
-  (child-element-factories [self]
-    [(new-subject-generator (mdf/get-location self))])
-
-  (get-location [_] parent-location)
-
-  (validate [self attributes]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self attributes)
-      (util/validate-child-elements element-factories attributes)))
-
-  (generate-nested [self attributes]
-    (when-let [subjects (seq (util/build-child-elements (mdf/child-element-factories self) attributes))]
-      (Subjects. subjects))))
-
 (defn new-subjects-generator [location]
-  (SubjectsGenerator. location))
+  (cne/new-container-nested-element-generator
+   {:min-occurs          0
+    :element-factory-fns [new-subject-generator]
+    :tag                 ::datacite/subjects
+    :parent-location     location}))

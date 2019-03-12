@@ -97,67 +97,28 @@
 
 ;; The geoLocationPoint element
 
-(deftype GeoLocationPoint [child-elements]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/geoLocationPoint {} (mapv mdf/to-xml child-elements))))
-
-(deftype GeoLocationPointGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "geoLocationPoint")
-  (min-occurs [_] 0)
-  (max-occurs [_] 1)
-  (get-location [_] (str parent-location ".geoLocationPoint"))
-
-  (child-element-factories [self]
-    (let [location (mdf/get-location self)]
-      [(new-longitude-generator "pointLongitude" ::datacite/pointLongitude location)
-       (new-latitude-generator "pointLatitude" ::datacite/pointLatitude location)]))
-
-  (validate [self {:keys [avus]}]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self avus)
-      (util/validate-child-elements element-factories avus)))
-
-  (generate-nested [self {:keys [avus]}]
-    (when-let [child-elements (seq (util/build-child-elements (mdf/child-element-factories self) avus))]
-      (GeoLocationPoint. child-elements))))
-
 (defn new-geo-location-point-generator [location]
-  (GeoLocationPointGenerator. location))
+  (cne/new-container-nested-element-generator
+   {:attr-name           "geoLocationPoint"
+    :min-occurs          0
+    :element-factory-fns [(partial new-longitude-generator "pointLongitude" ::datacite/pointLongitude)
+                          (partial new-latitude-generator "pointLatitude" ::datacite/pointLatitude)]
+    :tag                 ::datacite/geoLocationPoint
+    :parent-location     location}))
 
 ;; The geoLocationBox element
 
-(deftype GeoLocationBox [child-elements]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/geoLocationBox {} (mapv mdf/to-xml child-elements))))
-
-(deftype GeoLocationBoxGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "geoLocationBox")
-  (min-occurs [_] 0)
-  (max-occurs [_] "unbounded")
-  (get-location [_] (str parent-location ".getLocationBox"))
-
-  (child-element-factories [self]
-    (let [location (mdf/get-location self)]
-      [(new-longitude-generator "westBoundLongitude" ::datacite/westBoundLongitude location)
-       (new-longitude-generator "eastBoundLongitude" ::datacite/eastBoundLongitude location)
-       (new-latitude-generator "southBoundLatitude" ::datacite/southBoundLatitude location)
-       (new-latitude-generator "northBoundLatitude" ::datacite/northBoundLatitude location)]))
-
-  (validate [self {:keys [avus]}]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self avus)
-      (util/validate-child-elements element-factories avus)))
-
-  (generate-nested [self {:keys [avus]}]
-    (when-let [child-elements (seq (util/build-child-elements (mdf/child-element-factories self) avus))]
-      (GeoLocationBox. child-elements))))
-
 (defn new-geo-location-box-generator [location]
-  (GeoLocationBoxGenerator. location))
+  (cne/new-container-nested-element-generator
+   {:attr-name           "geoLocationBox"
+    :min-occurs          0
+    :max-occurs          "unbounded"
+    :element-factory-fns [(partial new-longitude-generator "westBoundLongitude" ::datacite/westBoundLongitude)
+                          (partial new-longitude-generator "eastBoundLongitude" ::datacite/eastBoundLongitude)
+                          (partial new-latitude-generator "southBoundLatitude" ::datacite/southBoundLatitude)
+                          (partial new-latitude-generator "northBoundLatitude" ::datacite/northBoundLatitude)]
+    :tag                 ::datacite/geoLocationBox
+    :parent-location     location}))
 
 ;; The geoLocation element
 

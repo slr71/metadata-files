@@ -2,6 +2,7 @@
   (:use [clojure.data.xml :only [element]]
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [org.cyverse.metadata-files :as mdf]
+            [org.cyverse.metadata-files.container-nested-element :as cne]
             [org.cyverse.metadata-files.datacite-4-1.affiliation :as affiliation]
             [org.cyverse.metadata-files.datacite-4-1.name-identifier :as name-identifier]
             [org.cyverse.metadata-files.util :as util]))
@@ -81,30 +82,9 @@
 
 ;; The contributors element
 
-(deftype Contributors [contributors]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/contributors {} (mapv mdf/to-xml contributors))))
-
-(deftype ContributorsGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] nil)
-  (min-occurs [_] 0)
-  (max-occurs [_] 1)
-
-  (child-element-factories [self]
-    [(new-contributor-generator (mdf/get-location self))])
-
-  (get-location [_] parent-location)
-
-  (validate [self attributes]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self attributes)
-      (util/validate-child-elements element-factories attributes)))
-
-  (generate-nested [self attributes]
-    (when-let [contributors (seq (util/build-child-elements (mdf/child-element-factories self) attributes))]
-      (Contributors. contributors))))
-
 (defn new-contributors-generator [location]
-  (ContributorsGenerator. location))
+  (cne/new-container-nested-element-generator
+   {:min-occurs          0
+    :element-factory-fns [new-contributor-generator]
+    :tag                 ::datacite/contributors
+    :parent-location     location}))
