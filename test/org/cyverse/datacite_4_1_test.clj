@@ -39,6 +39,16 @@
                         (re-pattern (str "Invalid " invalid-attr " value."))
                         (build-datacite attrs))))
 
+(defn- test-longitude-validation-failure [attrs]
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        #"Longitudes must be between -180.0 and 180.0"
+                        (build-datacite attrs))))
+
+(defn- test-latitude-validation-failure [attrs]
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        #"Latitudes must be between -90.0 and 90.0"
+                        (build-datacite attrs))))
+
 (deftest test-minimal
   (testing "Minimal DataCite file."
     (test-datacite "datacite-4.1/minimal.xml" min-attrs)))
@@ -251,3 +261,122 @@
                                              :value "the-description"
                                              :avus  [{:attr "descriptionType" :value "Blah"}]})
                             "descriptionType")))
+
+(deftest test-geo-location-place
+  (testing "DataCite file with a geographic location place."
+    (test-datacite "datacite-4.1/geo-location-place.xml"
+                   (conj min-attrs {:attr "geoLocation"
+                                    :avus [{:attr "geoLocationPlace" :value "Tucson"}]}))))
+
+(deftest test-geo-location-point
+  (testing "DataCite file with a geographic location point."
+    (test-datacite "datacite-4.1/geo-location-point.xml"
+                   (conj min-attrs {:attr "geoLocation"
+                                    :avus [{:attr "geoLocationPoint"
+                                            :avus [{:attr "pointLongitude" :value "132.2"}
+                                                   {:attr "pointLatitude" :value "88.1"}]}]}))))
+
+(deftest test-invalid-location-point-longitude
+  (testing "DataCite file with invalid location point longitude."
+    (test-longitude-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationPoint"
+                              :avus [{:attr "pointLongitude" :value "-180.1"}
+                                     {:attr "pointLatitude" :value "88.1"}]}]}))
+    (test-longitude-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationPoint"
+                              :avus [{:attr "pointLongitude" :value "180.1"}
+                                     {:attr "pointLatitude" :value "88.1"}]}]}))))
+
+(deftest test-invalid-location-point-latitude
+  (testing "DataCite file with invalid location point latitude."
+    (test-latitude-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationPoint"
+                              :avus [{:attr "pointLongitude" :value "-179.9"}
+                                     {:attr "pointLatitude" :value "-90.1"}]}]}))
+    (test-latitude-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationPoint"
+                              :avus [{:attr "pointLongitude" :value "179.9"}
+                                     {:attr "pointLatitude" :value "90.1"}]}]}))))
+
+(deftest test-incomplete-location-point
+  (testing "DataCite files with incomplete geographic location points"
+    (test-metadata-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationPoint"
+                              :avus [{:attr "pointLongitude" :value "179.9"}]}]}))
+    (test-metadata-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationPoint"
+                              :avus [{:attr "pointLatitude" :value "89.9"}]}]}))))
+
+(deftest test-geo-location-box
+  (testing "DataCite file with a geographic location box."
+    (test-datacite "datacite-4.1/geo-location-box.xml"
+                   (conj min-attrs {:attr "geoLocation"
+                                    :avus [{:attr "geoLocationBox"
+                                            :avus [{:attr "westBoundLongitude" :value "-180.0"}
+                                                   {:attr "eastBoundLongitude" :value "180.0"}
+                                                   {:attr "southBoundLatitude" :value "-90.0"}
+                                                   {:attr "northBoundLatitude" :value "90.0"}]}]}))))
+
+(deftest test-geo-location-box-validation-failures
+  (testing "DataCite file with invalid geographic box longitudes and latitudes."
+    (test-longitude-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationBox"
+                              :avus [{:attr "westBoundLongitude" :value "-180.1"}
+                                     {:attr "eastBoundLongitude" :value "180.0"}
+                                     {:attr "southBoundLatitude" :value "-90.0"}
+                                     {:attr "northBoundLatitude" :value "90.0"}]}]}))
+    (test-longitude-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationBox"
+                              :avus [{:attr "westBoundLongitude" :value "-180.0"}
+                                     {:attr "eastBoundLongitude" :value "180.1"}
+                                     {:attr "southBoundLatitude" :value "-90.0"}
+                                     {:attr "northBoundLatitude" :value "90.0"}]}]}))
+    (test-latitude-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationBox"
+                              :avus [{:attr "westBoundLongitude" :value "-180.0"}
+                                     {:attr "eastBoundLongitude" :value "180.0"}
+                                     {:attr "southBoundLatitude" :value "-90.1"}
+                                     {:attr "northBoundLatitude" :value "90.0"}]}]}))
+    (test-latitude-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationBox"
+                              :avus [{:attr "westBoundLongitude" :value "-180.0"}
+                                     {:attr "eastBoundLongitude" :value "180.0"}
+                                     {:attr "southBoundLatitude" :value "-90.0"}
+                                     {:attr "northBoundLatitude" :value "90.1"}]}]}))))
+
+(deftest test-incomplete-location-box
+  (testing "DataCite file with incomplete geographic location boxes."
+    (test-metadata-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationBox"
+                              :avus [{:attr "eastBoundLongitude" :value "180.0"}
+                                     {:attr "southBoundLatitude" :value "-90.0"}
+                                     {:attr "northBoundLatitude" :value "90.0"}]}]}))
+    (test-metadata-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationBox"
+                              :avus [{:attr "westBoundLongitude" :value "-180.0"}
+                                     {:attr "southBoundLatitude" :value "-90.0"}
+                                     {:attr "northBoundLatitude" :value "90.0"}]}]}))
+    (test-metadata-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationBox"
+                              :avus [{:attr "westBoundLongitude" :value "-180.0"}
+                                     {:attr "eastBoundLongitude" :value "180.0"}
+                                     {:attr "northBoundLatitude" :value "90.0"}]}]}))
+    (test-metadata-validation-failure
+     (conj min-attrs {:attr "geoLocation"
+                      :avus [{:attr "geoLocationBox"
+                              :avus [{:attr "westBoundLongitude" :value "-180.0"}
+                                     {:attr "eastBoundLongitude" :value "180.0"}
+                                     {:attr "southBoundLatitude" :value "-90.0"}]}]}))))

@@ -8,6 +8,7 @@
              [creators :as creators]
              [descriptions :as descriptions]
              [formats :as formats]
+             [geo-locations :as geo-locations]
              [identifier :as identifier]
              [language :as language]
              [publication-year :as publication-year]
@@ -59,14 +60,15 @@
        (formats/new-formats-generator location)
        (version/new-version-generator location)
        (rights-list/new-rights-list-generator location)
-       (descriptions/new-descriptions-generator location)]))
+       (descriptions/new-descriptions-generator location)
+       (geo-locations/new-geo-locations-generator location)]))
 
   (get-location [_] "")
 
   (validate [self attributes]
     (let [element-factories (mdf/child-element-factories self)]
       (util/validate-attr-counts self attributes)
-      (util/validate-child-elements (mdf/child-element-factories self) attributes)))
+      (util/validate-child-elements element-factories attributes)))
 
   (generate-nested [self attributes]
     (Datacite. (util/build-child-elements (mdf/child-element-factories self) attributes))))
