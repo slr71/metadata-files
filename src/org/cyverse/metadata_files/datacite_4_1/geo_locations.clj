@@ -162,23 +162,21 @@
 ;; The geoLocation element
 
 (defn new-geo-location-generator [location]
-  (let [attr-name "geoLocation"
-        min-occurs 0
-        max-occurs "unbounded"
-        child-element-factory-fns [new-geo-location-place-generator
-                                   new-geo-location-point-generator
-                                   new-geo-location-box-generator]
-        tag ::datacite/geoLocation]
-    (cne/new-container-nested-element-generator attr-name min-occurs max-occurs child-element-factory-fns
-                                                tag location)))
+  (cne/new-container-nested-element-generator
+   {:attr-name           "geoLocation"
+    :min-occurs          0
+    :max-occurs          "unbounded"
+    :element-factory-fns [new-geo-location-place-generator
+                          new-geo-location-point-generator
+                          new-geo-location-box-generator]
+    :tag                 ::datacite/geoLocation
+    :parent-location     location}))
 
 ;; The geoLocations element
 
 (defn new-geo-locations-generator [location]
-  (let [attr-name                 nil
-        min-occurs                0
-        max-occurs                1
-        child-element-factory-fns [new-geo-location-generator]
-        tag                       ::datacite/geoLocations]
-    (cne/new-container-nested-element-generator attr-name min-occurs max-occurs child-element-factory-fns
-                                                tag location)))
+  (cne/new-container-nested-element-generator
+   {:min-occurs          0
+    :element-factory-fns [new-geo-location-generator]
+    :tag                 ::datacite/geoLocations
+    :parent-location     location}))

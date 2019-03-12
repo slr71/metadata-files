@@ -31,5 +31,8 @@
       (when-let [child-elements (seq (util/build-child-elements (mdf/child-element-factories self) attributes))]
         (ContainerNestedElement. tag child-elements)))))
 
-(defn new-container-nested-element-generator [attr-name min-repeat max-repeat element-factory-fns tag parent-location]
-  (ContainerNestedElementGenerator. attr-name min-repeat max-repeat element-factory-fns tag parent-location))
+(defn new-container-nested-element-generator
+  [{:keys [attr-name min-occurs max-occurs element-factory-fns tag parent-location]
+    :or   {min-occurs 1
+           max-occurs 1}}]
+  (ContainerNestedElementGenerator. attr-name min-occurs max-occurs element-factory-fns tag parent-location))
