@@ -380,3 +380,29 @@
                               :avus [{:attr "westBoundLongitude" :value "-180.0"}
                                      {:attr "eastBoundLongitude" :value "180.0"}
                                      {:attr "southBoundLatitude" :value "-90.0"}]}]}))))
+
+(deftest test-funding-reference
+  (testing "DataCite files with a funding references"
+    (test-datacite "datacite-4.1/funding-reference.xml"
+                   (conj min-attrs
+                         {:attr "fundingReference"
+                          :avus [{:attr "funderName" :value "the-funder-name"}]}))
+    (test-datacite "datacite-4.1/funder-identifier.xml"
+                   (conj min-attrs
+                         {:attr "fundingReference"
+                          :avus [{:attr  "funderName"
+                                  :value "the-funder-name"}
+                                 {:attr  "funderIdentifier"
+                                  :value "the-funder-identifier"
+                                  :avus  [{:attr "funderIdentifierType" :value "Other"}]}]}))))
+
+(deftest test-incomplete-funding-reference
+  (testing "DataCite files with incomplete funding references."
+    (test-metadata-validation-failure
+     (conj min-attrs {:attr "fundingReference"}))
+    (test-missing-attribute
+     (conj min-attrs {:attr "fundingReference"
+                      :avus [{:attr  "funderName"
+                              :value "the-funder-name"}
+                             {:attr  "funderIdentifier"
+                              :value "the-funder-identifier"}]}))))

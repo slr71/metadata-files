@@ -8,6 +8,7 @@
              [creators :as creators]
              [descriptions :as descriptions]
              [formats :as formats]
+             [funding-references :as funding-references]
              [geo-locations :as geo-locations]
              [identifier :as identifier]
              [language :as language]
@@ -61,7 +62,8 @@
        (version/new-version-generator location)
        (rights-list/new-rights-list-generator location)
        (descriptions/new-descriptions-generator location)
-       (geo-locations/new-geo-locations-generator location)]))
+       (geo-locations/new-geo-locations-generator location)
+       (funding-references/new-funding-references-generator location)]))
 
   (get-location [_] "")
 
