@@ -3,6 +3,7 @@
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [org.cyverse.metadata-files :as mdf]
             [org.cyverse.metadata-files.container-nested-element :as cne]
+            [org.cyverse.metadata-files.simple-nested-element :as sne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -17,27 +18,12 @@
     (catch NumberFormatException _
       (throw (ex-info "Invalid longitude" {:location location :longitude longitude})))))
 
-(deftype Longitude [tag longitude]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element tag {} longitude)))
-
-(deftype LongitudeGenerator [attr-name tag parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] attr-name)
-  (min-occurs [_] 1)
-  (max-occurs [_] 1)
-  (get-location [_] (str parent-location "." attr-name))
-  (child-element-factories [_] [])
-
-  (validate [self {longitude :value}]
-    (validate-longitude (mdf/get-location self) longitude))
-
-  (generate-nested [_ {longitude :value}]
-    (Longitude. tag longitude)))
-
 (defn new-longitude-generator [attr-name tag location]
-  (LongitudeGenerator. attr-name tag location))
+  (sne/new-simple-nested-element-generator
+   {:attr-name       attr-name
+    :validation-fn   validate-longitude
+    :tag             tag
+    :parent-location location}))
 
 ;; General latitude elements
 
@@ -49,51 +35,21 @@
     (catch NumberFormatException _
       (throw (ex-info "Invalid latitude" {:location location :latitude :latitude})))))
 
-(deftype Latitude [tag latitude]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element tag {} latitude)))
-
-(deftype LatitudeGenerator [attr-name tag parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] attr-name)
-  (min-occurs [_] 1)
-  (max-occurs [_] 1)
-  (get-location [_] (str parent-location "." attr-name))
-  (child-element-factories [_] [])
-
-  (validate [self {latitude :value}]
-    (validate-latitude (mdf/get-location self) latitude))
-
-  (generate-nested [_ {latitude :value}]
-    (Latitude. tag latitude)))
-
 (defn new-latitude-generator [attr-name tag location]
-  (LatitudeGenerator. attr-name tag location))
+  (sne/new-simple-nested-element-generator
+   {:attr-name       attr-name
+    :validation-fn   validate-latitude
+    :tag             tag
+    :parent-location location}))
 
 ;; The geoLocationPlace element
 
-(deftype GeoLocationPlace [place]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/geoLocationPlace {} place)))
-
-(deftype GeoLocationPlaceGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "geoLocationPlace")
-  (min-occurs [_] 0)
-  (max-occurs [_] 1)
-  (get-location [_] (str parent-location ".geoLocationPlace"))
-  (child-element-factories [_] [])
-
-  (validate [self {place :value}]
-    (util/validate-non-blank-string-attribute-value (mdf/get-location self) place))
-
-  (generate-nested [self {place :value}]
-    (GeoLocationPlace. place)))
-
 (defn new-geo-location-place-generator [location]
-  (GeoLocationPlaceGenerator. location))
+  (sne/new-simple-nested-element-generator
+   {:attr-name       "geoLocationPlace"
+    :min-occurs      0
+    :tag             ::datacite/geoLocationPlace
+    :parent-location location}))
 
 ;; The geoLocationPoint element
 

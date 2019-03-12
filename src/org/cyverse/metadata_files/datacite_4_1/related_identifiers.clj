@@ -73,30 +73,6 @@
 
 ;; The relatedIdentifiers attribute
 
-(deftype RelatedIdentifiers [related-identifiers]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/relatedIdentifiers {} (mapv mdf/to-xml related-identifiers))))
-
-(deftype RelatedIdentifiersGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] nil)
-  (min-occurs [_] 0)
-  (max-occurs [_] 1)
-  (get-location [_] parent-location)
-
-  (child-element-factories [self]
-    [(new-related-identifier-generator (mdf/get-location self))])
-
-  (validate [self attributes]
-    (let [element-factories (mdf/child-element-factories self)]
-      (util/validate-attr-counts self attributes)
-      (util/validate-child-elements element-factories attributes)))
-
-  (generate-nested [self attributes]
-    (when-let [related-identifiers (seq (util/build-child-elements (mdf/child-element-factories self) attributes))]
-      (RelatedIdentifiers. related-identifiers))))
-
 (defn new-related-identifiers-generator [location]
   (cne/new-container-nested-element-generator
    {:min-occurs          0
