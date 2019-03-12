@@ -114,3 +114,21 @@
                attribute (get-attribute-arg factory)]
            (mdf/generate-nested factory attribute))
          (remove nil?))))
+
+(defn get-child-attributes
+  "The attribute argument given to methods in a nested element generator may either be a single attribute or a list of
+   attributes. If a list of attributes is given then child elements can be generated from that list. If a single
+   attribute is given then child elements will be obtained from the sub-attributes."
+  [attribute-arg]
+  (if (sequential? attribute-arg)
+    attribute-arg
+    (:avus attribute-arg)))
+
+(defn build-location
+  "Builds the location of the current nested attribute. Each location has potentially two components: a parent
+   location and a potentially empty attribute name. If the attribute name is empty then the parent location
+   should be used. Otherwise, the the two locations are joined with a periods and returned."
+  [parent-location attribute-name]
+  (if (string/blank? attribute-name)
+    parent-location
+    (str parent-location "." attribute-name)))
