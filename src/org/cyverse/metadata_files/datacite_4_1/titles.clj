@@ -1,10 +1,8 @@
 (ns org.cyverse.metadata-files.datacite-4-1.titles
-  (:use [medley.core :only [remove-vals]]
-        [clojure.data.xml :only [element]]
-        [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
+  (:use [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
   (:require [clojure.string :as string]
-            [org.cyverse.metadata-files :as mdf]
             [org.cyverse.metadata-files.container-nested-element :as cne]
+            [org.cyverse.metadata-files.simple-nested-element :as sne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -25,36 +23,17 @@
                          :valid-values valid-title-types})))
       title-type)))
 
-(deftype Title [title title-type language]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (let [attrs (remove-vals string/blank? {:titleType title-type ::xml/lang language})]
-      (element ::datacite/title attrs title))))
-
-(deftype TitleGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "title")
-  (min-occurs [_] 1)
-  (max-occurs [_] "unbounded")
-  (child-element-factories [_] [])
-
-  (get-location [_]
-    (str parent-location ".title"))
-
-  (validate [self {title :value avus :avus :as attribute}]
-    (let [location (mdf/get-location self)]
-      (util/validate-non-blank-string-attribute-value location title)
-      (get-title-type location attribute)
-      (util/get-language avus)))
-
-  (generate-nested [self {title :value avus :avus :as attribute}]
-    (let [location (mdf/get-location self)]
-      (Title. title
-              (get-title-type location attribute)
-              (util/get-language avus)))))
+(defn- get-title-attrs [location {:keys [avus] :as attribute}]
+  {:titleType (get-title-type location attribute)
+   ::xml/lang (util/get-language avus)})
 
 (defn new-title-generator [location]
-  (TitleGenerator. location))
+  (sne/new-simple-nested-element-generator
+   {:attr-name       "title"
+    :max-occurs      "unbounded"
+    :attrs-fn        get-title-attrs
+    :tag             ::datacite/title
+    :parent-location location}))
 
 ;; The titles element
 

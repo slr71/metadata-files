@@ -1,7 +1,6 @@
 (ns org.cyverse.metadata-files.datacite-4-1.resource-type
-  (:use [clojure.data.xml :only [element]]
-        [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
-  (:require [org.cyverse.metadata-files :as mdf]
+  (:use [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
+  (:require [org.cyverse.metadata-files.simple-nested-element :as sne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -34,28 +33,12 @@
                        :valid-values valid-resource-types})))
     value))
 
-(deftype ResourceType [resource-type resource-type-general]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/resourceType {:resourceTypeGeneral resource-type-general} resource-type)))
-
-(deftype ResourceTypeGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "resourceType")
-  (min-occurs [_] 1)
-  (max-occurs [_] 1)
-  (child-element-factories [_] [])
-
-  (get-location [_]
-    (str parent-location ".resourceType"))
-
-  (validate [self {resource-type :value :as attribute}]
-    (let [location (mdf/get-location self)]
-      (util/validate-non-blank-string-attribute-value location resource-type)
-      (get-resource-type-general location attribute)))
-
-  (generate-nested [self {resource-type :value :as attribute}]
-    (ResourceType. resource-type (get-resource-type-general (mdf/get-location self) attribute))))
+(defn- get-resource-type-attrs [location attribute]
+  {:resourceTypeGeneral (get-resource-type-general location attribute)})
 
 (defn new-resource-type-generator [location]
-  (ResourceTypeGenerator. location))
+  (sne/new-simple-nested-element-generator
+   {:attr-name       "resourceType"
+    :attrs-fn        get-resource-type-attrs
+    :tag             ::datacite/resourceType
+    :parent-location location}))

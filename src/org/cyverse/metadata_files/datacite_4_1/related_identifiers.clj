@@ -1,8 +1,7 @@
 (ns org.cyverse.metadata-files.datacite-4-1.related-identifiers
-  (:use [clojure.data.xml :only [element]]
-        [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
-  (:require [org.cyverse.metadata-files :as mdf]
-            [org.cyverse.metadata-files.container-nested-element :as cne]
+  (:use [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
+  (:require [org.cyverse.metadata-files.container-nested-element :as cne]
+            [org.cyverse.metadata-files.simple-nested-element :as sne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -42,34 +41,18 @@
                        :valid-values valid-relation-types})))
     relation-type))
 
-(deftype RelatedIdentifier [related-identifier related-identifier-type relation-type]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/relatedIdentifier {:relatedIdentifierType related-identifier-type :relationType relation-type}
-      related-identifier)))
-
-(deftype RelatedIdentifierGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "relatedIdentifier")
-  (min-occurs [_] 0)
-  (max-occurs [_] "unbounded")
-  (get-location [self] (str parent-location ".relatedIdentifier"))
-  (child-element-factories [_] [])
-
-  (validate [self {related-identifier :value :as attribute}]
-    (let [location (mdf/get-location self)]
-      (util/validate-non-blank-string-attribute-value location related-identifier)
-      (get-related-identifier-type location attribute)
-      (get-relation-type location attribute)))
-
-  (generate-nested [self {related-identifier :value :as attribute}]
-    (let [location (mdf/get-location self)]
-      (RelatedIdentifier. related-identifier
-                          (get-related-identifier-type location attribute)
-                          (get-relation-type location attribute)))))
+(defn- get-related-identifier-attrs [location attribute]
+  {:relatedIdentifierType (get-related-identifier-type location attribute)
+   :relationType          (get-relation-type location attribute)})
 
 (defn new-related-identifier-generator [location]
-  (RelatedIdentifierGenerator. location))
+  (sne/new-simple-nested-element-generator
+   {:attr-name       "relatedIdentifier"
+    :min-occurs      0
+    :max-occurs      "unbounded"
+    :attrs-fn        get-related-identifier-attrs
+    :tag             ::datacite/relatedIdentifier
+    :parent-location location}))
 
 ;; The relatedIdentifiers attribute
 

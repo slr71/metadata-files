@@ -1,63 +1,27 @@
 (ns org.cyverse.metadata-files.datacite-4-1.subjects
-  (:use [medley.core :only [remove-vals]]
-        [clojure.data.xml :only [element]]
-        [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
-  (:require [clojure.string :as string]
-            [org.cyverse.metadata-files :as mdf]
-            [org.cyverse.metadata-files.container-nested-element :as cne]
+  (:use [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
+  (:require [org.cyverse.metadata-files.container-nested-element :as cne]
+            [org.cyverse.metadata-files.simple-nested-element :as sne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
 
 ;; The subject element
 
-(defn- build-subject-attributes [subject-scheme scheme-uri value-uri language]
-  (->> {:subjectScheme subject-scheme
-        :schemeURI     scheme-uri
-        :valueURI      value-uri
-        ::xml/lang     language}
-       (remove-vals string/blank?)))
-
-(defn- get-subject-scheme [_ {:keys [avus]}]
-  (util/attr-value avus "subjectScheme"))
-
-(defn- get-scheme-uri [_ {:keys [avus]}]
-  (util/attr-value avus "schemeURI"))
-
-(defn- get-value-uri [_ {:keys [avus]}]
-  (util/attr-value avus "valueURI"))
-
-(deftype Subject [subject subject-scheme scheme-uri value-uri language]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/subject (build-subject-attributes subject-scheme scheme-uri value-uri language) subject)))
-
-(deftype SubjectGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "subject")
-  (min-occurs [_] 0)
-  (max-occurs [_] "unbounded")
-  (child-element-factories [_] [])
-
-  (validate [self {subject :value :as attribute}]
-    (let [location (mdf/get-location self)]
-      (util/validate-non-blank-string-attribute-value location subject)
-      (get-subject-scheme self attribute)
-      (get-scheme-uri self attribute)
-      (get-value-uri self attribute)))
-
-  (get-location [_] (str parent-location ".subject"))
-
-  (generate-nested [self {subject :value avus :avus :as attribute}]
-    (let [location (mdf/get-location self)]
-      (Subject. subject
-                (get-subject-scheme location attribute)
-                (get-scheme-uri location attribute)
-                (get-value-uri location attribute)
-                (util/get-language avus)))))
+(defn- get-subject-attrs [_ {:keys [avus]}]
+  {:subjectScheme (util/attr-value avus "subjectScheme")
+   :schemeURI     (util/attr-value avus "schemeURI")
+   :valueURI      (util/attr-value avus "valueURI")
+   ::xml/lang     (util/get-language avus)})
 
 (defn new-subject-generator [location]
-  (SubjectGenerator. location))
+  (sne/new-simple-nested-element-generator
+   {:attr-name       "subject"
+    :min-occurs      0
+    :max-occurs      "unbounded"
+    :attrs-fn        get-subject-attrs
+    :tag             ::datacite/subject
+    :parent-location location}))
 
 ;; The subjects element
 

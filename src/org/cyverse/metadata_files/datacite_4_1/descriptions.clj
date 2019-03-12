@@ -1,10 +1,7 @@
 (ns org.cyverse.metadata-files.datacite-4-1.descriptions
-  (:use [medley.core :only [remove-vals]]
-        [clojure.data.xml :only [element]]
-        [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
-  (:require [clojure.string :as string]
-            [org.cyverse.metadata-files :as mdf]
-            [org.cyverse.metadata-files.container-nested-element :as cne]
+  (:use [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
+  (:require [org.cyverse.metadata-files.container-nested-element :as cne]
+            [org.cyverse.metadata-files.simple-nested-element :as sne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -25,32 +22,18 @@
                        :valid-values valid-description-types})))
     description-type))
 
-(deftype Description [description description-type language]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (let [attrs (remove-vals string/blank? {:descriptionType description-type ::xml/lang language})]
-      (element ::datacite/description attrs description))))
-
-(deftype DescriptionGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "description")
-  (min-occurs [_] 0)
-  (max-occurs [_] "unbounded")
-  (get-location [_] (str parent-location ".description"))
-  (child-element-factories [_] [])
-
-  (validate [self {description :value :as attribute}]
-    (let [location (mdf/get-location self)]
-      (util/validate-non-blank-string-attribute-value location description)
-      (get-description-type location attribute)))
-
-  (generate-nested [self {description :value avus :avus :as attribute}]
-    (Description. description
-                  (get-description-type (mdf/get-location self) attribute)
-                  (util/get-language avus))))
+(defn- get-description-attrs [location {:keys [avus] :as attribute}]
+  {:descriptionType (get-description-type location attribute)
+   ::xml/lang       (util/get-language avus)})
 
 (defn new-description-generator [location]
-  (DescriptionGenerator. location))
+  (sne/new-simple-nested-element-generator
+   {:attr-name       "description"
+    :min-occurs      0
+    :max-occurs      "unbounded"
+    :attrs-fn        get-description-attrs
+    :tag             ::datacite/description
+    :parent-location location}))
 
 ;; The desriptions element
 

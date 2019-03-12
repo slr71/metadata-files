@@ -1,9 +1,6 @@
 (ns org.cyverse.metadata-files.datacite-4-1.name-identifier
-  (:use [medley.core :only [remove-vals]]
-        [clojure.data.xml :only [element]]
-        [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
-  (:require [clojure.string :as string]
-            [org.cyverse.metadata-files :as mdf]
+  (:use [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
+  (:require [org.cyverse.metadata-files.simple-nested-element :as sne]
             [org.cyverse.metadata-files.util :as util]))
 
 (alias-uris)
@@ -16,31 +13,15 @@
 (defn- get-name-identifier-scheme-uri [_ {:keys [avus]}]
   (util/attr-value avus "schemeURI"))
 
-(deftype NameIdentifier [name-identifier scheme scheme-uri]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (let [attrs (remove-vals string/blank? {:nameIdentifierScheme scheme :schemeURI scheme-uri})]
-      (element ::datacite/nameIdentifier attrs name-identifier))))
-
-(deftype NameIdentifierGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "nameIdentifier")
-  (min-occurs [_] 0)
-  (max-occurs [_] "unbounded")
-  (child-element-factories [_] [])
-  (get-location [_] (str parent-location ".nameIdentifier"))
-
-  (validate [self {name-identifier :value :as attribute}]
-    (let [location (mdf/get-location self)]
-      (util/validate-non-blank-string-attribute-value location name-identifier)
-      (get-name-identifier-scheme location attribute)
-      (get-name-identifier-scheme-uri location attribute)))
-
-  (generate-nested [self {name-identifier :value :as attribute}]
-    (let [location (mdf/get-location self)]
-      (NameIdentifier. name-identifier
-                       (get-name-identifier-scheme location attribute)
-                       (get-name-identifier-scheme-uri location attribute)))))
+(defn- get-name-identifier-attrs [location attribute]
+  {:nameIdentifierScheme (get-name-identifier-scheme location attribute)
+   :schemeURI            (get-name-identifier-scheme-uri location attribute)})
 
 (defn new-name-identifier-generator [location]
-  (NameIdentifierGenerator. location))
+  (sne/new-simple-nested-element-generator
+   {:attr-name       "nameIdentifier"
+    :min-occurs      0
+    :max-occurs      "unbounded"
+    :attrs-fn        get-name-identifier-attrs
+    :tag             ::datacite/nameIdentifier
+    :parent-location location}))
