@@ -1,7 +1,7 @@
 (ns org.cyverse.metadata-files.datacite-4-1.contributors
   (:use [clojure.data.xml :only [element]]
         [org.cyverse.metadata-files.datacite-4-1.namespaces :only [alias-uris]])
-  (:require [org.cyverse.metadata-files :as mdf]
+  (:require [org.cyverse.metadata-files.compound-nested-element :as compound-ne]
             [org.cyverse.metadata-files.container-nested-element :as cne]
             [org.cyverse.metadata-files.datacite-4-1.affiliation :as affiliation]
             [org.cyverse.metadata-files.datacite-4-1.name-identifier :as name-identifier]
@@ -45,40 +45,23 @@
                        :valid-values valid-contributor-types})))
     contributor-type))
 
-(deftype Contributor [contributor-name contributor-type elements]
-  mdf/XmlSerializable
-  (to-xml [_]
-    (element ::datacite/contributor {:contributorType contributor-type}
-      (concat [(element ::datacite/contributorName {} contributor-name)] (mapv mdf/to-xml elements)))))
+(defn- get-contributor-attrs [location attribute]
+  {:contributorType (get-contributor-type location attribute)})
 
-(deftype ContributorGenerator [parent-location]
-  mdf/NestedElementFactory
-  (attribute-name [_] "contributor")
-  (min-occurs [_] 0)
-  (max-occurs [_] "unbounded")
-
-  (child-element-factories [self]
-    (let [location (mdf/get-location self)]
-      [(name-identifier/new-name-identifier-generator location)
-       (affiliation/new-affiliation-generator location)]))
-
-  (get-location [_] (str parent-location ".contributor"))
-
-  (validate [self {contributor-name :value avus :avus :as attribute}]
-    (let [location (mdf/get-location self)]
-      (util/validate-non-blank-string-attribute-value location contributor-name)
-      (get-contributor-type location attribute)
-      (util/validate-attr-counts self avus)
-      (util/validate-child-elements (mdf/child-element-factories self) avus)))
-
-  (generate-nested [self {contributor-name :value avus :avus :as attribute}]
-    (let [location (mdf/get-location self)]
-      (Contributor. contributor-name
-                    (get-contributor-type location attribute)
-                    (util/build-child-elements (mdf/child-element-factories self) avus)))))
+(defn- format-contributor-name [contributor-name]
+  (element ::datacite/contributorName {} contributor-name))
 
 (defn new-contributor-generator [location]
-  (ContributorGenerator. location))
+  (compound-ne/new-compound-nested-element-generator
+   {:attr-name           "contributor"
+    :min-occurs          0
+    :max-occurs          "unbounded"
+    :attrs-fn            get-contributor-attrs
+    :format-fn           format-contributor-name
+    :element-factory-fns [name-identifier/new-name-identifier-generator
+                          affiliation/new-affiliation-generator]
+    :tag                 ::datacite/contributor
+    :parent-location     location}))
 
 ;; The contributors element
 
