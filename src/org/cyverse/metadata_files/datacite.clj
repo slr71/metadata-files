@@ -18,7 +18,7 @@
     (element ::datacite/identifier {:identifierType type} (string/replace id #"^doi:" ""))))
 
 (deftype IdentifierGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"Identifier" "identifierType"})
 
@@ -47,7 +47,7 @@
       (mapv mdf/to-xml creators))))
 
 (deftype CreatorsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"datacite.creator" "creatorAffiliation"})
 
@@ -75,7 +75,7 @@
       (mapv mdf/to-xml titles))))
 
 (deftype TitlesGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"datacite.title"})
 
@@ -95,7 +95,7 @@
     (element ::datacite/publisher {} publisher)))
 
 (deftype PublisherGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"datacite.publisher"})
 
@@ -115,7 +115,7 @@
     (element ::datacite/publicationYear {} year)))
 
 (deftype PublicationYearGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"datacite.publicationyear"})
 
@@ -135,7 +135,7 @@
     (element ::datacite/resourceType {:resourceTypeGeneral "Dataset"} resource-type)))
 
 (deftype ResourceTypeGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{"datacite.resourcetype"})
 
@@ -161,7 +161,7 @@
       (mapv mdf/to-xml subjects))))
 
 (deftype SubjectsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
@@ -188,7 +188,7 @@
       (mapv mdf/to-xml contributors))))
 
 (deftype ContributorsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
@@ -213,7 +213,7 @@
       (mapv mdf/to-xml alternate-ids))))
 
 (deftype AlternateIdsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
@@ -240,7 +240,7 @@
       (mapv mdf/to-xml related-ids))))
 
 (deftype RelatedIdsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
@@ -266,7 +266,7 @@
       (mapv mdf/to-xml rights-list))))
 
 (deftype RightsListGenterator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
@@ -291,7 +291,7 @@
       (mapv mdf/to-xml descriptions))))
 
 (deftype DescriptionsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
@@ -335,7 +335,7 @@
       (mapv mdf/to-xml geolocations))))
 
 (deftype GeoLocationsGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     #{})
 
@@ -386,7 +386,7 @@
           (optional-element-factories attributes)))
 
 (deftype DataciteGenerator [attributes]
-  mdf/ElementFactory
+  mdf/FlatElementFactory
   (required-attributes [_]
     (->> (required-element-factories attributes)
          (map mdf/required-attributes)
