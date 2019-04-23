@@ -10,3 +10,4 @@ pom.xml.asc
 .eastwood
 .hgignore
 .hg/
+*.iml
