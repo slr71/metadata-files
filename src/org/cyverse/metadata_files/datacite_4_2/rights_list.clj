@@ -9,7 +9,10 @@
 ;; The rights element
 
 (defn- get-rights-attrs [_ {:keys [avus]}]
-  {:rightsURI (util/attr-value avus "rightsURI")})
+  {:rightsURI (util/attr-value avus "rightsURI")
+   :rightsIdentifier (util/attr-value avus "rightsIdentifier")
+   :rightsIdentifierScheme (util/attr-value avus "rightsIdentifierScheme")
+   :schemeURI (util/attr-value avus "schemeURI")})
 
 (defn new-rights-generator [location]
   (sne/new-simple-nested-element-generator
