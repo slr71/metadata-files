@@ -81,7 +81,7 @@ user=> (println (indent-str xml))
 ### DataCite 4.1
 
 The primary interface for creating a DataCite 4.1 file is essentially the same as the interface for creating a DataCite
-3.1 file. The function `org.cyverse.metadata-files.datacite-4-1/build-datacite` returns an instance of
+3.1 file. The function `org.cyverse.metadata-files.datacite-4-2/build-datacite` returns an instance of
 `clojure.data.xml.Element` representing the metadata file. This metadata file generator works with the `DOI Request -
 DataCite 4.1` template in the Discovery Environment, which is a nested metadata template. Because the template is
 nested, the attributes can have the same names as the DataCite elements. The following attributes are supported.
@@ -143,7 +143,7 @@ As with DataCite 3.1, any attribute that is not in this list is ignored.
 Example:
 
 ```
-user=> (require '[org.cyverse.metadata-files.datacite-4-1 :refer [build-datacite]]
+user=> (require '[org.cyverse.metadata-files.datacite-4-2 :refer [build-datacite]]
   #_=>          '[clojure.data.xml :refer :all]
   #_=>          :reload-all)
 
