@@ -22,10 +22,12 @@
     "Workflow"
     "Other"})
 
-(defn- get-resource-type-general [location {:keys [avus]}]
+(defn get-resource-type-general [location {:keys [avus]} & {:keys [required]}]
   (let [attribute-name "resourceTypeGeneral"
-        value          (util/get-required-attribute-value location avus attribute-name)]
-    (when-not (valid-resource-types value)
+        value          (if required
+                         (util/get-required-attribute-value location avus attribute-name)
+                         (util/attr-value avus attribute-name))]
+    (when (and value (not (valid-resource-types value)))
       (throw (ex-info (str "Invalid " attribute-name " value.")
                       {:location     location
                        :attribute    attribute-name
@@ -34,7 +36,7 @@
     value))
 
 (defn- get-resource-type-attrs [location attribute]
-  {:resourceTypeGeneral (get-resource-type-general location attribute)})
+  {:resourceTypeGeneral (get-resource-type-general location attribute :required true)})
 
 (defn new-resource-type-generator [location]
   (sne/new-simple-nested-element-generator

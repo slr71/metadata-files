@@ -1,6 +1,7 @@
 (ns org.cyverse.metadata-files.datacite-4-2.related-identifiers
   (:use [org.cyverse.metadata-files.datacite-4-2.namespaces :only [alias-uris]])
   (:require [org.cyverse.metadata-files.container-nested-element :as cne]
+            [org.cyverse.metadata-files.datacite-4-2.resource-type :as resource-type]
             [org.cyverse.metadata-files.simple-nested-element :as sne]
             [org.cyverse.metadata-files.util :as util]))
 
@@ -43,7 +44,8 @@
 
 (defn- get-related-identifier-attrs [location attribute]
   {:relatedIdentifierType (get-related-identifier-type location attribute)
-   :relationType          (get-relation-type location attribute)})
+   :relationType          (get-relation-type location attribute)
+   :resourceTypeGeneral   (resource-type/get-resource-type-general location attribute)})
 
 (defn new-related-identifier-generator [location]
   (sne/new-simple-nested-element-generator
