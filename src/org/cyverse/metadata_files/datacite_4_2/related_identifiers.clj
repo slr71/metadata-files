@@ -10,14 +10,14 @@
 
 (def ^:private valid-related-identifier-types
   #{"ARK" "arXiv" "bibcode" "DOI" "EAN13" "EISSN" "Handle" "IGSN" "ISBN" "ISSN" "ISTC" "LISSN" "LSID" "PMID"
-    "PURL" "UPC" "URL" "URN"})
+    "PURL" "UPC" "URL" "URN" "w3id"})
 
 (def ^:private valid-relation-types
   #{"IsCitedBy" "Cites" "IsSupplementTo" "IsSupplementedBy" "IsContinuedBy" "Continues" "IsNewVersionOf"
     "IsPreviousVersionOf" "IsPartOf" "HasPart" "IsReferencedBy" "References" "IsDocumentedBy" "Documents"
     "IsCompiledBy" "Compiles" "IsVariantFormOf" "IsOriginalFormOf" "IsIdenticalTo" "HasMetadata" "IsMetadataFor"
     "Reviews" "IsReviewedBy" "IsDerivedFrom" "IsSourceOf" "Describes" "IsDescribedBy" "HasVersion" "IsVersionOf"
-    "Requires" "IsRequiredBy"})
+    "Requires" "IsRequiredBy" "Obsoletes" "IsObsoletedBy"})
 
 (defn- get-related-identifier-type [location {:keys [avus]}]
   (let [attribute-name          "relatedIdentifierType"
