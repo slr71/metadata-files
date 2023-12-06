@@ -237,18 +237,20 @@
 (deftest test-rights-localcontexts
   (testing "DataCite file with a rights URI."
     (test-datacite "datacite-4.2/rights-localcontexts.xml"
-                   (conj min-attrs {:attr  "rights"
-                                    :value "Local Contexts TK Notice https://localcontexts.org/notice/tk-notice: The TK Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material. The TK Notice may indicate that TK Labels are in development and their implementation is being negotiated."
-                                    :avus  [{:attr "rightsURI" :value "https://localcontextshub.org/projects/7894f2fd-bbcb-423c-afff-ea67b4e1e4f7/"}
-                                            {:attr "rightsIdentifier" :value "TK-Notice"}
-                                            {:attr "rightsIdentifierScheme" :value "Local Contexts"}
-                                            {:attr "schemeURI" :value "https://localcontexts.org"}]}
-                                   {:attr  "rights"
-                                    :value "Local Contexts TK Attribution: This Label is being used to correct historical mistakes or exclusions pertaining to this material. This is especially in relation to the names of the people involved in performing or making this work and/or correctly naming the community from which it originally derives. As a user you are being asked to also apply the correct attribution in any future use of this work."
-                                    :avus  [{:attr "rightsURI" :value "https://localcontextshub.org/projects/259854f7-b261-4c8c-8556-4b153deebc18/"}
-                                            {:attr "rightsIdentifier" :value "TK-A"}
-                                            {:attr "rightsIdentifierScheme" :value "Local Contexts"}
-                                            {:attr "schemeURI" :value "https://localcontexts.org"}]}))))
+                   (conj min-attrs
+                         {:attr "rights" :value "ODC PDDL"}
+                         {:attr  "LocalContexts"
+                          :value "Local Contexts TK Notice https://localcontexts.org/notice/tk-notice: The TK Notice is a visible notification that there are accompanying cultural rights and responsibilities that need further attention for any future sharing and use of this material. The TK Notice may indicate that TK Labels are in development and their implementation is being negotiated."
+                          :avus  [{:attr "rightsURI" :value "https://localcontextshub.org/projects/7894f2fd-bbcb-423c-afff-ea67b4e1e4f7/"}
+                                  {:attr "rightsIdentifier" :value "TK-Notice"}
+                                  {:attr "rightsIdentifierScheme" :value "Local Contexts"}
+                                  {:attr "schemeURI" :value "https://localcontexts.org"}]}
+                         {:attr  "LocalContexts"
+                          :value "Local Contexts TK Attribution: This Label is being used to correct historical mistakes or exclusions pertaining to this material. This is especially in relation to the names of the people involved in performing or making this work and/or correctly naming the community from which it originally derives. As a user you are being asked to also apply the correct attribution in any future use of this work."
+                          :avus  [{:attr "rightsURI" :value "https://localcontextshub.org/projects/259854f7-b261-4c8c-8556-4b153deebc18/"}
+                                  {:attr "rightsIdentifier" :value "TK-A"}
+                                  {:attr "rightsIdentifierScheme" :value "Local Contexts"}
+                                  {:attr "schemeURI" :value "https://localcontexts.org"}]}))))
 
 (deftest test-desription
   (testing "DataCite file with a description."
