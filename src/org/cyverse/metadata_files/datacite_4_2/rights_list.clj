@@ -23,11 +23,21 @@
     :tag             ::datacite/rights
     :parent-location location}))
 
+(defn new-local-contexts-generator [location]
+  (sne/new-simple-nested-element-generator
+   {:attr-name       "LocalContexts"
+    :min-occurs      0
+    :max-occurs      "unbounded"
+    :attrs-fn        get-rights-attrs
+    :tag             ::datacite/rights
+    :parent-location location}))
+
 ;; The rightsList element
 
 (defn new-rights-list-generator [location]
   (cne/new-container-nested-element-generator
    {:min-occurs          0
-    :element-factory-fns [new-rights-generator]
+    :element-factory-fns [new-rights-generator
+                          new-local-contexts-generator]
     :tag                 ::datacite/rightsList
     :parent-location     location}))
