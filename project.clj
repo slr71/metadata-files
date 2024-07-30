@@ -5,11 +5,12 @@
             :url "http://www.cyverse.org/license"}
   :deploy-repositories [["releases" :clojars]
                         ["snapshots" :clojars]]
-  :plugins [[jonase/eastwood "0.3.5"]
-            [test2junit "1.2.2"]]
+  :plugins [[jonase/eastwood "1.4.3"]
+            [lein-ancient "0.7.0"]
+            [test2junit "1.4.4"]]
   :eastwood {:exclude-linters [:implicit-dependencies]}
-  :dependencies [[medley "1.1.0"]
-                 [org.clojure/clojure "1.8.0"]
-                 [org.clojure/data.xml "0.2.0-alpha6"]
-                 [org.clojure/tools.logging "0.4.1"]]
+  :dependencies [[medley "1.4.0"]
+                 [org.clojure/clojure "1.11.3"]
+                 [org.clojure/data.xml "0.2.0-alpha9"]
+                 [org.clojure/tools.logging "1.3.0"]]
   :profiles {:dev {:resource-paths ["test-resources"]}})
