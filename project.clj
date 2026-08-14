@@ -12,5 +12,5 @@
   :dependencies [[medley "1.4.0"]
                  [org.clojure/clojure "1.12.5"]
                  [org.clojure/data.xml "0.2.0-alpha9"]
-                 [org.clojure/tools.logging "1.3.0"]]
+                 [org.clojure/tools.logging "1.3.1"]]
   :profiles {:dev {:resource-paths ["test-resources"]}})
